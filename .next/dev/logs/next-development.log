@@ -1,0 +1,34 @@
+[00:00:03.092] Server  LOG     ✓ Ready in 2s
+[00:00:10.848] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:11.551] Browser WARN    Image with src "/hero-entity.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:00:11.551] Browser WARN    Image with src "/logos/sp.jpeg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:00:11.551] Browser WARN    Image with src "/logos/sb.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:00:11.551] Browser WARN    Image with src "/logos/mz.jpg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:02:00.081] Server  LOG     ✓ Compiled in 205ms
+[00:02:06.902] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:02:07.434] Browser WARN    Image with src "/hero-entity.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:02:07.434] Browser WARN    Image with src "/logos/sp.jpeg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:02:07.434] Browser WARN    Image with src "/logos/sb.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:02:07.434] Browser WARN    Image with src "/logos/mz.jpg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:06:01.329] Server  LOG     ✓ Compiled in 690ms
+[00:09:06.069] Server  LOG     ✓ Compiled in 114ms
+[00:10:04.940] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:10:05.469] Browser WARN    Image with src "/hero-entity.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:10:05.469] Browser WARN    Image with src "/logos/sp.jpeg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:10:05.469] Browser WARN    Image with src "/logos/sb.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:10:05.469] Browser WARN    Image with src "/logos/mz.jpg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:12:07.004] Server  LOG     ✓ Compiled in 631ms
+[00:12:10.390] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:12:11.372] Browser WARN    Image with src "/hero-entity.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:12:11.372] Browser WARN    Image with src "/logos/sp.jpeg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:12:11.373] Browser WARN    Image with src "/logos/sb.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:12:11.373] Browser WARN    Image with src "/logos/mz.jpg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:14:51.469] Server  LOG     ✓ Compiled in 612ms
+[00:14:56.519] Server  LOG     ✓ Compiled in 177ms
+[00:16:58.270] Server  LOG     ✓ Compiled in 194ms
+[00:17:08.303] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:22:59.273] Server  LOG     ✓ Compiled in 497ms
+[00:23:05.476] Browser WARN    Image with src "/hero-entity.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:23:05.660] Browser WARN    Image with src "/logos/sb.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:23:05.660] Browser WARN    Image with src "/logos/sp.jpeg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[00:23:05.660] Browser WARN    Image with src "/logos/mz.jpg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
