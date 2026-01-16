@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+// ✅ FIX: Point to the new location inside 'components/layout'
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -24,10 +25,13 @@ export default function RootLayout({
         suppressHydrationWarning={true}
       >
         <Navbar />
+        
         {/* Main content grows to fill space, pushing footer down */}
+        {/* pt-16 compensates for the fixed Navbar height */}
         <main className="flex-grow pt-16">
           {children}
         </main>
+        
         <Footer />
       </body>
     </html>

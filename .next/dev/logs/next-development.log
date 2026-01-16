@@ -629,3 +629,2558 @@ Module not found: Can't resolve '@/components/Navbar'
 Import map: aliased to relative './components/Navbar' inside of [project]/
 
 https://nextjs.org/docs/messages/module-not-found
+[01:09:19.143] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:09:36.138] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:09:57.145] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:09:57.145] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:11:21.662] Server  ERROR   ⨯ ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:11:22.157] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:11:24.101] Browser ERROR   uncaughtError: Error: ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:11:24.395] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:11:24.395] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:11:24.395] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:11:24.395] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:11:24.395] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:11:24.395] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:11:24.395] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:11:24.395] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:11:24.395] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:11:24.395] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:11:24.395] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:11:24.504] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:11:25.133] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:11:25.133] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:11:25.133] Browser ERROR   ./app/layout.tsx:4:1
+Module not found: Can't resolve '@/components/Navbar'
+  2 | import { Inter } from 'next/font/google';
+  3 | import './globals.css';
+> 4 | import Navbar from '@/components/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import Footer from '@/components/Footer';
+  6 |
+  7 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:14:03.740] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.744] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.759] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.766] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.771] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.773] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.775] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.777] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.779] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.781] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.785] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.787] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.790] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.792] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.794] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.796] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.798] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.803] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.810] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.814] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.821] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.825] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.828] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.857] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.872] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.880] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.910] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.937] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.960] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.974] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.978] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:03.988] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.023] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.025] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.028] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.030] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.035] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.037] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.040] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.042] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.054] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.059] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.061] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.069] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.075] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.080] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.086] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.088] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.090] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.093] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.096] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.101] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.104] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.107] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.110] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.112] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.114] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.117] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.119] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.122] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.124] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.127] Server  ERROR   ⨯ ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.129] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:04.131] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:14:05.142] Browser ERROR   ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:14:05.142] Browser ERROR   ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:14:05.142] Browser ERROR   ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:14:05.142] Browser ERROR   ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:16:47.709] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.739] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.771] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.791] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.820] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.827] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.839] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.844] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.870] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.877] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.896] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.907] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.925] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.938] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.952] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.958] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.961] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.962] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.969] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.972] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.975] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.978] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.989] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:47.996] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:48.010] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:48.020] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:48.026] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:48.029] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:48.044] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:48.054] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:48.057] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:48.070] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:16:49.140] Browser ERROR   ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:16:49.140] Browser ERROR   ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:16:49.140] Browser ERROR   ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:16:49.141] Browser ERROR   ./app/layout.tsx:6:1
+Module not found: Can't resolve '@/components/layout/Footer'
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+  5 | import Navbar from '@/components/layout/Navbar';
+> 6 | import Footer from '@/components/layout/Footer';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+  9 |
+
+Import map: aliased to relative './components/layout/Footer' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:16:49.142] Browser ERROR   ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:16:49.142] Browser ERROR   ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:18:46.943] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:46.954] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:46.964] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:46.969] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:46.983] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:46.995] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:46.999] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.010] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.017] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.024] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.029] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.037] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.042] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.045] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.051] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.055] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.059] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.066] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.077] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.101] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.116] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.123] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.207] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.211] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.219] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.225] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.230] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.232] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.234] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.237] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.244] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.248] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.257] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.263] Server  ERROR   ⨯ ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[01:18:47.270] Server  LOG     ✓ Compiled in 1522ms
+[01:18:48.145] Browser ERROR   ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:18:48.146] Browser ERROR   ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:18:52.144] Browser ERROR   ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
+[01:18:52.145] Browser ERROR   ./app/layout.tsx:5:1
+Module not found: Can't resolve '@/components/layout/Navbar'
+  3 | import './globals.css';
+  4 | // ✅ FIX: Point to the new location inside 'components/layout'
+> 5 | import Navbar from '@/components/layout/Navbar';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import Footer from '@/components/layout/Footer';
+  7 |
+  8 | const inter = Inter({ subsets: ['latin'] });
+
+Import map: aliased to relative './components/layout/Navbar' inside of [project]/
+
+https://nextjs.org/docs/messages/module-not-found
