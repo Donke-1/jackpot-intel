@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Trophy, Users, Activity, Target, Crown } from 'lucide-react';
-import { cn } from '@/lib/utils'; // <--- THIS WAS MISSING
+import { cn } from '@/lib/utils';
 
 export default function LiveIntel() {
   const [feedItems, setFeedItems] = useState<any[]>([]);
@@ -26,10 +26,11 @@ export default function LiveIntel() {
       }
 
       // 2. Get "Top Agents" - RANKED BY TOTAL WINS
+      // Note: We filter out null usernames to keep the list clean
       const { data: profiles } = await supabase
         .from('profiles')
         .select('username, total_wins')
-        .neq('username', null)
+        .neq('username', null) 
         .order('total_wins', { ascending: false })
         .limit(5);
 
@@ -134,7 +135,7 @@ export default function LiveIntel() {
               </div>
             );
           })}
-          {topAgents.length === 0 && <p className="text-xs text-gray-500">Scanning for operatives...</p>}
+          {topAgents.length === 0 && <p className="text-xs text-gray-500 italic text-center">Scanning for operatives...</p>}
         </div>
       </div>
 
