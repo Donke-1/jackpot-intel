@@ -2,12 +2,6 @@
   "node": {
     "78b9340fba67097d00b00821e2492e9084445fa77b": {
       "workers": {
-        "app/admin/page": {
-          "moduleId": "[project]/.next-internal/server/app/admin/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
-          "async": false,
-          "exportedName": "joinCycle",
-          "filename": "app/actions.ts"
-        },
         "app/dashboard/page": {
           "moduleId": "[project]/.next-internal/server/app/dashboard/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false,
@@ -16,26 +10,10 @@
         }
       },
       "layer": {
-        "app/admin/page": "action-browser",
         "app/dashboard/page": "action-browser"
       },
       "filename": "app/actions.ts",
       "exportedName": "joinCycle"
-    },
-    "6090f5b93aa407259447be965dc7e7b2e37e4904a4": {
-      "workers": {
-        "app/admin/page": {
-          "moduleId": "[project]/.next-internal/server/app/admin/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
-          "async": false,
-          "exportedName": "settleCycle",
-          "filename": "app/actions.ts"
-        }
-      },
-      "layer": {
-        "app/admin/page": "action-browser"
-      },
-      "filename": "app/actions.ts",
-      "exportedName": "settleCycle"
     }
   },
   "edge": {},

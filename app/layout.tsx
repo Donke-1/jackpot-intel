@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-// ✅ FIX: Point to the new location inside 'components/layout'
-import Navbar from '@/components/layout/Navbar';
+
+// ✅ FIX: "NavBar" must match the filename "NavBar.tsx" exactly (Capital B)
+import Navbar from '@/components/layout/NavBar'; 
 import Footer from '@/components/layout/Footer';
 
 const inter = Inter({ subsets: ['latin'] });

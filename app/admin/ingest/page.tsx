@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Copy, ArrowRight, Save, Database, AlertTriangle } from 'lucide-react';
+import { Copy, ArrowRight, Database, CalendarClock } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 
@@ -24,11 +24,12 @@ export default function JackpotIngest() {
 
   // --- STEP 1: GENERATE PROMPT ---
   const generatePrompt = () => {
+    // We added the "kickoff" requirement to the prompt
     const prompt = `
 I have a list of football matches for the ${platform} ${variant} (${gamesCount} Games). 
 Please analyze them using "${strategy}".
 
-INPUT MATCHES:
+INPUT MATCHES (Contains Dates/Times):
 ${rawInput}
 
 INSTRUCTIONS:
@@ -38,6 +39,7 @@ Each object in the array must have:
 - "match_name" (e.g. "Home vs Away")
 - "home_team"
 - "away_team"
+- "kickoff" (Convert the match date/time from the input into a valid ISO 8601 String e.g. "2024-05-20T16:00:00". Assume the current year is ${new Date().getFullYear()} if missing.)
 - "prediction" (Return ONLY "1", "X", or "2")
 - "confidence" (Integer 1-100)
 - "reason" (Short 10-word analysis)
@@ -53,7 +55,6 @@ Ensure the order matches the input exactly.
   // --- STEP 2: PARSE RESPONSE ---
   const handleParse = () => {
     try {
-      // Remove any markdown code blocks if the user copied them
       const cleanJson = geminiJson.replace(/```json/g, '').replace(/```/g, '');
       const data = JSON.parse(cleanJson);
       
@@ -72,7 +73,20 @@ Ensure the order matches the input exactly.
   const handleSaveToInventory = async () => {
     setLoading(true);
     try {
-      // 1. Create the JACKPOT container
+      // 1. AUTO-CALCULATE DATES based on the parsed matches
+      // Extract all dates
+      const dates = parsedGames.map(g => new Date(g.kickoff).getTime()).filter(d => !isNaN(d));
+      
+      if (dates.length === 0) {
+        throw new Error("Could not parse valid dates from AI response. Please check the JSON.");
+      }
+
+      // Start Date = The Earliest Match
+      const minDate = Math.min(...dates);
+      // End Date = The Latest Match + 3 Hours (Approx game time)
+      const maxDate = Math.max(...dates) + (3 * 60 * 60 * 1000);
+
+      // 2. Create the JACKPOT container
       const { data: jackpot, error: jpError } = await supabase
         .from('jackpots')
         .insert({
@@ -81,27 +95,26 @@ Ensure the order matches the input exactly.
           total_games: parsedGames.length,
           week_number: week,
           status: 'pending',
-          // Default dates (Admin should edit these later in the Cycle Manager)
-          start_date: new Date().toISOString(),
-          end_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
+          start_date: new Date(minDate).toISOString(), // Auto-calculated
+          end_date: new Date(maxDate).toISOString()   // Auto-calculated
         })
         .select()
         .single();
 
       if (jpError) throw jpError;
 
-      // 2. Insert Events & Predictions
+      // 3. Insert Events & Predictions
       for (const game of parsedGames) {
         
         // A. Insert Event
         const { data: event, error: evError } = await supabase
           .from('events')
           .insert({
-            jackpot_id: jackpot.id, // Linking to the Jackpot, not a cycle yet
+            jackpot_id: jackpot.id,
             platform,
             event_name: game.match_name,
             week_number: week,
-            deadline: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // Default 24h deadline
+            deadline: game.kickoff // ✅ EACH EVENT GETS ITS OWN EXACT TIME
           })
           .select()
           .single();
@@ -109,8 +122,6 @@ Ensure the order matches the input exactly.
         if (evError) throw evError;
 
         // B. Insert Prediction
-        // Note: strategy_pick logic depends on which strategy you selected.
-        // For now, we map the single prediction to the selected strategy column.
         const predictionData = {
           event_id: event.id,
           match_id: game.match_id,
@@ -119,7 +130,6 @@ Ensure the order matches the input exactly.
           match_name: game.match_name,
           tip: game.prediction,
           confidence: game.confidence,
-          // If Strat A was selected, fill strat_a_pick. If B, fill B.
           strat_a_pick: strategy.includes('A') ? game.prediction : 'X', 
           strat_b_pick: strategy.includes('B') ? game.prediction : 'X',
         };
@@ -127,8 +137,8 @@ Ensure the order matches the input exactly.
         await supabase.from('predictions').insert(predictionData);
       }
 
-      alert("Success! Jackpot added to Inventory.");
-      // Reset Form
+      alert(`Success! Jackpot added. \nStart: ${new Date(minDate).toLocaleString()} \nEnd: ${new Date(maxDate).toLocaleString()}`);
+      
       setStep(1);
       setRawInput('');
       setGeminiJson('');
@@ -136,13 +146,13 @@ Ensure the order matches the input exactly.
 
     } catch (err: any) {
       console.error(err);
-      alert("Database Error: " + err.message);
+      alert("Error: " + err.message);
     }
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-8">
+    <div className="min-h-screen bg-black text-white p-8 animate-in fade-in">
       <div className="max-w-5xl mx-auto space-y-8">
         
         {/* Header */}
@@ -150,8 +160,7 @@ Ensure the order matches the input exactly.
           <Database className="w-10 h-10 text-cyan-500" />
           <div>
             <h1 className="text-3xl font-black uppercase">Admin Ingest</h1>
-            {/* FIX: Used &rarr; instead of -> to prevent syntax error */}
-            <p className="text-gray-400">Add Raw Jackpots &rarr; Gemini &rarr; Database Inventory</p>
+            <p className="text-gray-400">Add Raw Jackpots → Gemini → Database Inventory</p>
           </div>
         </div>
 
@@ -192,6 +201,14 @@ Ensure the order matches the input exactly.
                   </div>
                 </div>
 
+                {/* NOTE: We removed the Date Pickers because AI extracts them now */}
+                <div className="bg-cyan-900/10 p-3 rounded border border-cyan-900/50 flex items-center">
+                   <CalendarClock className="w-4 h-4 text-cyan-500 mr-2" />
+                   <p className="text-[10px] text-cyan-400">
+                     Time extraction enabled: AI will read match dates from your input.
+                   </p>
+                </div>
+
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Strategy Used</label>
                   <select value={strategy} onChange={e => setStrategy(e.target.value)} className="w-full bg-black border border-gray-700 p-2 rounded text-white">
@@ -209,7 +226,7 @@ Ensure the order matches the input exactly.
                    value={rawInput}
                    onChange={e => setRawInput(e.target.value)}
                    className="flex-1 w-full bg-black border border-gray-700 p-4 rounded font-mono text-xs text-gray-300 resize-none focus:outline-none focus:border-cyan-500 transition-colors"
-                   placeholder={`Paste the matches here...\n\n1. Team A vs Team B\n2. Team C vs Team D`}
+                   placeholder={`Paste the matches WITH DATES here...\n\n1. Arsenal vs Chelsea - 14/05 15:00\n2. Liverpool vs City - 14/05 17:30`}
                  />
                  <Button onClick={generatePrompt} className="w-full mt-4 bg-purple-600 hover:bg-purple-500 font-bold py-6">
                    <Copy className="w-4 h-4 mr-2" /> COPY GEMINI PROMPT
@@ -258,7 +275,12 @@ Ensure the order matches the input exactly.
                  <h2 className="text-xl font-bold text-white">{platform} - {variant}</h2>
                  <p className="text-sm text-gray-400">{parsedGames.length} Matches • Week {week}</p>
                </div>
-               <Badge className="bg-purple-900 text-purple-200 border-purple-700">{strategy}</Badge>
+               <div className="text-right">
+                 <Badge className="bg-purple-900 text-purple-200 border-purple-700 block mb-1">{strategy}</Badge>
+                 <span className="text-[10px] text-gray-500 font-mono">
+                    Timeframe extracted from matches
+                 </span>
+               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -266,7 +288,12 @@ Ensure the order matches the input exactly.
                 <div key={i} className="bg-black border border-gray-800 p-3 rounded flex flex-col space-y-2">
                    <div className="flex justify-between items-start">
                       <span className="text-xs text-gray-500 font-bold">#{game.match_id}</span>
-                      <Badge variant="outline" className="border-cyan-500 text-cyan-400 font-bold">{game.prediction}</Badge>
+                      <div className="text-right">
+                        <Badge variant="outline" className="border-cyan-500 text-cyan-400 font-bold mb-1">{game.prediction}</Badge>
+                        <div className="text-[10px] text-gray-500">
+                          {game.kickoff ? new Date(game.kickoff).toLocaleString() : 'No Date'}
+                        </div>
+                      </div>
                    </div>
                    <div className="font-bold text-sm text-gray-300 truncate">{game.match_name}</div>
                    <div className="text-[10px] text-gray-500">{game.reason}</div>

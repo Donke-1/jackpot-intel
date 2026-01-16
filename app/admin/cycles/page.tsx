@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Layers, Plus, Calendar, Save, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Layers, Plus, Calendar, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import Link from 'next/link';
 
 export default function CycleManager() {
   const [pendingJackpots, setPendingJackpots] = useState<any[]>([]);
@@ -50,7 +51,7 @@ export default function CycleManager() {
       const { data: cycle, error: cycleError } = await supabase
         .from('cycles')
         .insert({
-          id: crypto.randomUUID(), // Explicitly creating ID as text
+          id: crypto.randomUUID(),
           name: cycleName,
           category: 'sports',
           target_desc: `${selectedJackpots.length} Jackpots Bundle`,
@@ -88,7 +89,7 @@ export default function CycleManager() {
   };
 
   return (
-    <div className="text-white space-y-8">
+    <div className="text-white space-y-8 animate-in fade-in">
       <div className="flex items-center justify-between">
         <div>
            <h1 className="text-3xl font-bold flex items-center">
@@ -96,9 +97,19 @@ export default function CycleManager() {
            </h1>
            <p className="text-gray-400">Bundle pending jackpots into a live cycle.</p>
         </div>
-        <Button disabled={saving} onClick={handlePublish} className="bg-green-600 hover:bg-green-500 py-6 text-lg font-bold">
-          {saving ? 'PUBLISHING...' : 'PUBLISH LIVE CYCLE'}
-        </Button>
+        
+        <div className="flex space-x-3">
+          {/* ✅ FIXED: Now links to the actual Ingest Page */}
+          <Link href="/admin/ingest">
+            <Button variant="outline">
+              <Plus className="w-4 h-4 mr-2" /> Ingest Data
+            </Button>
+          </Link>
+
+          <Button disabled={saving} onClick={handlePublish} className="bg-green-600 hover:bg-green-500 py-6 text-lg font-bold">
+            {saving ? 'PUBLISHING...' : 'PUBLISH LIVE CYCLE'}
+          </Button>
+        </div>
       </div>
 
       {/* FORM */}
@@ -152,7 +163,9 @@ export default function CycleManager() {
           <div className="col-span-full text-center py-12 border border-dashed border-gray-800 rounded-xl">
              <AlertCircle className="w-10 h-10 text-gray-600 mx-auto mb-3" />
              <p className="text-gray-500">No pending jackpots found.</p>
-             <p className="text-xs text-gray-600">Go to "Data Ingestion" to add some first.</p>
+             <p className="text-xs text-gray-600">
+               Go to <Link href="/admin/ingest" className="text-cyan-500 underline">Data Ingestion</Link> to add some first.
+             </p>
           </div>
         )}
       </div>

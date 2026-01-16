@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { ShieldAlert } from 'lucide-react';
+// ✅ IMPORT THE SIDEBAR
+import Sidebar from '@/components/layout/Sidebar';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -39,6 +41,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (loading) return <div className="min-h-screen bg-black" />;
 
+  // 🔒 ACCESS DENIED STATE
   if (!authorized) {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center text-center p-4">
@@ -55,5 +58,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  return <>{children}</>;
+  // ✅ AUTHORIZED STATE (Now with Navigation)
+  return (
+    <div className="flex h-screen bg-black">
+      {/* 1. Sidebar for Admin Navigation */}
+      <Sidebar />
+
+      {/* 2. Main Content Area */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-black p-6 md:p-12 relative">
+          
+          {/* Admin Watermark (Visual Indicator) */}
+          <div className="absolute top-0 right-0 p-4 opacity-50 pointer-events-none">
+            <span className="text-[80px] font-black text-gray-900/30 leading-none select-none">
+              ADMIN
+            </span>
+          </div>
+
+          <div className="relative z-10 max-w-6xl mx-auto">
+             {children}
+          </div>
+        </main>
+      </div>
+    </div>
+  );
 }
