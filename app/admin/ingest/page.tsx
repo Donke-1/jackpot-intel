@@ -1,319 +1,200 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Copy, ArrowRight, Database, CalendarClock } from 'lucide-react';
+import { Layers, Plus, RefreshCcw, CheckCircle2, AlertCircle, Clock, Target, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import Link from 'next/link';
 
-export default function JackpotIngest() {
-  const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(false);
+export default function CycleManager() {
+  const [inventory, setInventory] = useState<any[]>([]);
+  const [extendingCycles, setExtendingCycles] = useState<any[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [targetCycleId, setTargetCycleId] = useState<string | null>(null);
   
-  // FORM STATE
-  const [platform, setPlatform] = useState('SportPesa');
-  const [variant, setVariant] = useState('Mega Jackpot');
-  const [gamesCount, setGamesCount] = useState(17);
-  const [week, setWeek] = useState(42);
-  const [strategy, setStrategy] = useState('Strategy A (Variance Shield)');
-  const [rawInput, setRawInput] = useState('');
-  
-  // PARSED DATA
-  const [geminiJson, setGeminiJson] = useState('');
-  const [parsedGames, setParsedGames] = useState<any[]>([]);
+  const [cycleName, setCycleName] = useState('');
+  const [goalType, setGoalType] = useState('1 Bonus Target');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  // --- STEP 1: GENERATE PROMPT ---
-  const generatePrompt = () => {
-    // We added the "kickoff" requirement to the prompt
-    const prompt = `
-I have a list of football matches for the ${platform} ${variant} (${gamesCount} Games). 
-Please analyze them using "${strategy}".
-
-INPUT MATCHES (Contains Dates/Times):
-${rawInput}
-
-INSTRUCTIONS:
-Return a RAW JSON object (no markdown formatting) with a "matches" array. 
-Each object in the array must have:
-- "match_id" (Integer 1 to ${gamesCount})
-- "match_name" (e.g. "Home vs Away")
-- "home_team"
-- "away_team"
-- "kickoff" (Convert the match date/time from the input into a valid ISO 8601 String e.g. "2024-05-20T16:00:00". Assume the current year is ${new Date().getFullYear()} if missing.)
-- "prediction" (Return ONLY "1", "X", or "2")
-- "confidence" (Integer 1-100)
-- "reason" (Short 10-word analysis)
-
-Ensure the order matches the input exactly.
-    `.trim();
-    
-    navigator.clipboard.writeText(prompt);
-    alert("Prompt copied! Paste into Gemini, then copy the JSON response back here.");
-    setStep(2);
-  };
-
-  // --- STEP 2: PARSE RESPONSE ---
-  const handleParse = () => {
-    try {
-      const cleanJson = geminiJson.replace(/```json/g, '').replace(/```/g, '');
-      const data = JSON.parse(cleanJson);
-      
-      if (data.matches && Array.isArray(data.matches)) {
-        setParsedGames(data.matches);
-        setStep(3);
-      } else {
-        alert("Invalid JSON. Could not find 'matches' array.");
-      }
-    } catch (e: any) {
-      alert("JSON Parse Error: " + e.message);
-    }
-  };
-
-  // --- STEP 3: SAVE TO INVENTORY ---
-  const handleSaveToInventory = async () => {
-    setLoading(true);
-    try {
-      // 1. AUTO-CALCULATE DATES based on the parsed matches
-      // Extract all dates
-      const dates = parsedGames.map(g => new Date(g.kickoff).getTime()).filter(d => !isNaN(d));
-      
-      if (dates.length === 0) {
-        throw new Error("Could not parse valid dates from AI response. Please check the JSON.");
-      }
-
-      // Start Date = The Earliest Match
-      const minDate = Math.min(...dates);
-      // End Date = The Latest Match + 3 Hours (Approx game time)
-      const maxDate = Math.max(...dates) + (3 * 60 * 60 * 1000);
-
-      // 2. Create the JACKPOT container
-      const { data: jackpot, error: jpError } = await supabase
+  // 1. Fetch Inventory & Failed Cycles
+  useEffect(() => {
+    async function fetchData() {
+      // Fetch Jackpots (Available for bundling)
+      const { data: inv } = await supabase
         .from('jackpots')
-        .insert({
-          platform,
-          variant,
-          total_games: parsedGames.length,
-          week_number: week,
-          status: 'pending',
-          start_date: new Date(minDate).toISOString(), // Auto-calculated
-          end_date: new Date(maxDate).toISOString()   // Auto-calculated
-        })
-        .select()
-        .single();
-
-      if (jpError) throw jpError;
-
-      // 3. Insert Events & Predictions
-      for (const game of parsedGames) {
-        
-        // A. Insert Event
-        const { data: event, error: evError } = await supabase
-          .from('events')
-          .insert({
-            jackpot_id: jackpot.id,
-            platform,
-            event_name: game.match_name,
-            week_number: week,
-            deadline: game.kickoff // ✅ EACH EVENT GETS ITS OWN EXACT TIME
-          })
-          .select()
-          .single();
-
-        if (evError) throw evError;
-
-        // B. Insert Prediction
-        const predictionData = {
-          event_id: event.id,
-          match_id: game.match_id,
-          home_team: game.home_team,
-          away_team: game.away_team,
-          match_name: game.match_name,
-          tip: game.prediction,
-          confidence: game.confidence,
-          strat_a_pick: strategy.includes('A') ? game.prediction : 'X', 
-          strat_b_pick: strategy.includes('B') ? game.prediction : 'X',
-        };
-
-        await supabase.from('predictions').insert(predictionData);
-      }
-
-      alert(`Success! Jackpot added. \nStart: ${new Date(minDate).toLocaleString()} \nEnd: ${new Date(maxDate).toLocaleString()}`);
+        .select('*')
+        .in('status', ['pending', 'active']) 
+        .gt('end_date', new Date().toISOString()) 
+        .order('start_date', { ascending: true });
       
-      setStep(1);
-      setRawInput('');
-      setGeminiJson('');
-      setParsedGames([]);
-
-    } catch (err: any) {
-      console.error(err);
-      alert("Error: " + err.message);
+      // Fetch Cycles needing rescue
+      const { data: ext } = await supabase
+        .from('cycles')
+        .select('*')
+        .eq('status', 'pending_extension');
+      
+      if (inv) setInventory(inv);
+      if (ext) setExtendingCycles(ext);
+      setLoading(false);
     }
-    setLoading(false);
+    fetchData();
+  }, []);
+
+  // 2. Smart Date Calculation
+  const getCycleWindow = () => {
+    if (selectedIds.length === 0) return null;
+    const selected = inventory.filter(j => selectedIds.includes(j.id));
+    const endDates = selected.map(j => new Date(j.end_date).getTime());
+    return new Date(Math.max(...endDates));
+  };
+
+  const cycleEnd = getCycleWindow();
+
+  // 3. Handle Publishing NEW Cycle
+  const handlePublish = async () => {
+    if (!cycleName || selectedIds.length === 0) return alert("Name and Selection required");
+    setSaving(true);
+    try {
+      const { data: cycle, error: cycleError } = await supabase
+        .from('cycles')
+        .insert({
+          id: crypto.randomUUID(),
+          name: cycleName,
+          category: 'Hunter',
+          target_desc: goalType,
+          status: 'active',
+          current_week: inventory.find(j => j.id === selectedIds[0])?.week_number || 0,
+          end_date: cycleEnd?.toISOString()
+        })
+        .select().single();
+
+      if (cycleError) throw cycleError;
+
+      const links = selectedIds.map(jId => ({ cycle_id: cycle.id, jackpot_id: jId }));
+      await supabase.from('cycle_jackpots').insert(links);
+      await supabase.from('jackpots').update({ status: 'active' }).in('id', selectedIds);
+
+      alert("Cycle Published Successfully!");
+      window.location.reload();
+    } catch (err: any) { alert(err.message); }
+    setSaving(false);
+  };
+
+  // 4. Handle ROLLOVER (Extension)
+  const handleExtendCycle = async () => {
+    if (!targetCycleId || selectedIds.length === 0) return alert("Select a Cycle and Jackpots");
+    setSaving(true);
+    try {
+      const links = selectedIds.map(jId => ({ cycle_id: targetCycleId, jackpot_id: jId }));
+      await supabase.from('cycle_jackpots').insert(links);
+
+      await supabase
+        .from('cycles')
+        .update({ status: 'active', end_date: cycleEnd?.toISOString() })
+        .eq('id', targetCycleId);
+
+      alert("Cycle Extended! Users access maintained.");
+      window.location.reload();
+    } catch (err: any) { alert(err.message); }
+    setSaving(false);
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-8 animate-in fade-in">
-      <div className="max-w-5xl mx-auto space-y-8">
-        
-        {/* Header */}
-        <div className="flex items-center space-x-4">
-          <Database className="w-10 h-10 text-cyan-500" />
-          <div>
-            <h1 className="text-3xl font-black uppercase">Admin Ingest</h1>
-            <p className="text-gray-400">Add Raw Jackpots → Gemini → Database Inventory</p>
+    <div className="text-white space-y-8 p-8 animate-in fade-in pb-20">
+      <div className="flex items-center justify-between">
+        <div>
+           <h1 className="text-3xl font-black uppercase flex items-center">
+             <Layers className="mr-3 text-cyan-500" /> Cycle Manager
+           </h1>
+           <p className="text-gray-400">Construct & Rescue investment cycles.</p>
+        </div>
+        <div className="flex space-x-3">
+          <Link href="/admin/ingest"><Button variant="outline"><Plus className="w-4 h-4 mr-2" /> Ingest</Button></Link>
+          {!targetCycleId && (
+            <Button onClick={handlePublish} disabled={saving || selectedIds.length === 0} className="bg-green-600 hover:bg-green-500 font-bold px-8">
+              {saving ? 'PROCESSING...' : 'PUBLISH NEW CYCLE'}
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* 🚩 ROLLOVER SECTION */}
+      {extendingCycles.length > 0 && (
+        <div className="bg-red-900/10 border border-red-500/30 p-6 rounded-2xl space-y-4">
+          <h2 className="text-red-500 font-black text-xs uppercase tracking-widest flex items-center">
+            <RefreshCcw className="w-4 h-4 mr-2" /> Pending Extensions (Failed Goals)
+          </h2>
+          <div className="flex flex-wrap gap-3">
+            {extendingCycles.map(c => (
+              <button key={c.id} onClick={() => setTargetCycleId(targetCycleId === c.id ? null : c.id)}
+                className={`px-4 py-3 rounded-xl border-2 transition-all text-left min-w-[220px] ${targetCycleId === c.id ? 'border-red-500 bg-red-500/20' : 'border-gray-800 bg-black'}`}>
+                <div className="text-sm font-bold">{c.name}</div>
+                <div className="text-[10px] text-gray-500">{c.target_desc}</div>
+              </button>
+            ))}
+          </div>
+          {targetCycleId && (
+            <div className="pt-4 border-t border-red-500/20 flex items-center justify-between">
+              <p className="text-xs text-red-300">Select new jackpots from the inventory below to extend this cycle.</p>
+              <Button onClick={handleExtendCycle} disabled={saving || selectedIds.length === 0} className="bg-red-600 hover:bg-red-500">CONFIRM ROLLOVER</Button>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* SETTINGS */}
+        <div className="lg:col-span-1 space-y-6">
+          <div className="bg-gray-900/50 p-6 rounded-xl border border-gray-800 space-y-6 sticky top-6">
+            {!targetCycleId ? (
+              <div>
+                <label className="block text-xs font-bold text-gray-500 mb-2 uppercase">Cycle Name</label>
+                <input type="text" value={cycleName} onChange={(e) => setCycleName(e.target.value)} className="w-full bg-black border border-gray-700 p-3 rounded text-white focus:border-cyan-500 outline-none" placeholder="e.g. Aggressive Strategy A" />
+              </div>
+            ) : (
+              <div className="p-3 bg-red-950/30 border border-red-900 rounded text-red-200 text-xs font-bold">RESCUE MODE ACTIVE</div>
+            )}
+            <div>
+              <label className="block text-xs font-bold text-gray-500 mb-2 uppercase">Success Goal</label>
+              <select value={goalType} onChange={(e) => setGoalType(e.target.value)} className="w-full bg-black border border-gray-700 p-3 rounded text-white focus:border-cyan-500 outline-none">
+                <option>1 Bonus Target</option>
+                <option>2 Bonus Target</option>
+                <option>Profit ROI 150%</option>
+              </select>
+            </div>
+            {cycleEnd && (
+              <div className="p-4 bg-cyan-950/20 border border-cyan-900/50 rounded-lg">
+                <div className="flex items-center text-cyan-400 text-xs font-bold mb-1"><Clock className="w-3 h-3 mr-2" /> AUTO-CALCULATED END</div>
+                <div className="text-xl font-mono">{cycleEnd.toLocaleDateString()}</div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Stepper */}
-        <div className="flex items-center space-x-2 text-sm border-b border-gray-800 pb-6">
-          <Badge className={step >= 1 ? "bg-cyan-600" : "bg-gray-800 text-gray-500"}>1. Configure</Badge>
-          <ArrowRight className="w-4 h-4 text-gray-600" />
-          <Badge className={step >= 2 ? "bg-cyan-600" : "bg-gray-800 text-gray-500"}>2. Parse AI</Badge>
-          <ArrowRight className="w-4 h-4 text-gray-600" />
-          <Badge className={step >= 3 ? "bg-green-600" : "bg-gray-800 text-gray-500"}>3. Save</Badge>
-        </div>
-
-        {/* STEP 1: CONFIG */}
-        {step === 1 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <div className="bg-gray-900/50 p-6 rounded-xl border border-gray-800 space-y-4">
-                <h3 className="font-bold text-gray-300 uppercase text-xs tracking-widest">Metadata</h3>
-                
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Platform</label>
-                  <select value={platform} onChange={e => setPlatform(e.target.value)} className="w-full bg-black border border-gray-700 p-2 rounded text-white">
-                    <option>SportPesa</option>
-                    <option>Mozzart</option>
-                    <option>SportyBet</option>
-                    <option>Shabiki</option>
-                  </select>
+        {/* INVENTORY */}
+        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+          {inventory.map((jackpot) => {
+            const isSelected = selectedIds.includes(jackpot.id);
+            return (
+              <div key={jackpot.id} onClick={() => setSelectedIds(prev => isSelected ? prev.filter(x => x !== jackpot.id) : [...prev, jackpot.id])}
+                className={`cursor-pointer p-5 rounded-xl border-2 transition-all ${isSelected ? 'bg-cyan-900/10 border-cyan-500' : 'bg-gray-900/40 border-gray-800 hover:border-gray-600'}`}>
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-bold">{jackpot.platform}</h3>
+                  <Badge variant="outline" className="text-[10px]">{jackpot.variant}</Badge>
                 </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                     <label className="block text-xs text-gray-500 mb-1">Variant Name</label>
-                     <input type="text" value={variant} onChange={e => setVariant(e.target.value)} className="w-full bg-black border border-gray-700 p-2 rounded text-white" />
-                  </div>
-                  <div>
-                     <label className="block text-xs text-gray-500 mb-1">Total Games</label>
-                     <input type="number" value={gamesCount} onChange={e => setGamesCount(parseInt(e.target.value))} className="w-full bg-black border border-gray-700 p-2 rounded text-white" />
-                  </div>
+                <div className="text-xs text-gray-500 flex items-center mb-4">
+                  <Calendar className="w-3 h-3 mr-1" /> Starts: {new Date(jackpot.start_date).toLocaleDateString()}
                 </div>
-
-                {/* NOTE: We removed the Date Pickers because AI extracts them now */}
-                <div className="bg-cyan-900/10 p-3 rounded border border-cyan-900/50 flex items-center">
-                   <CalendarClock className="w-4 h-4 text-cyan-500 mr-2" />
-                   <p className="text-[10px] text-cyan-400">
-                     Time extraction enabled: AI will read match dates from your input.
-                   </p>
-                </div>
-
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Strategy Used</label>
-                  <select value={strategy} onChange={e => setStrategy(e.target.value)} className="w-full bg-black border border-gray-700 p-2 rounded text-white">
-                    <option>Strategy A (Variance Shield)</option>
-                    <option>Strategy B (Aggressive)</option>
-                  </select>
+                <div className="flex justify-between items-center">
+                  <Badge className="bg-gray-800">{jackpot.total_games} Games</Badge>
+                  <span className="text-[10px] text-gray-600 font-bold uppercase">Strategy: {jackpot.strategy_tag || 'N/A'}</span>
                 </div>
               </div>
-            </div>
-
-            <div className="space-y-4">
-               <div className="bg-gray-900/50 p-6 rounded-xl border border-gray-800 h-full flex flex-col">
-                 <h3 className="font-bold text-gray-300 uppercase text-xs tracking-widest mb-2">Raw Input</h3>
-                 <textarea 
-                   value={rawInput}
-                   onChange={e => setRawInput(e.target.value)}
-                   className="flex-1 w-full bg-black border border-gray-700 p-4 rounded font-mono text-xs text-gray-300 resize-none focus:outline-none focus:border-cyan-500 transition-colors"
-                   placeholder={`Paste the matches WITH DATES here...\n\n1. Arsenal vs Chelsea - 14/05 15:00\n2. Liverpool vs City - 14/05 17:30`}
-                 />
-                 <Button onClick={generatePrompt} className="w-full mt-4 bg-purple-600 hover:bg-purple-500 font-bold py-6">
-                   <Copy className="w-4 h-4 mr-2" /> COPY GEMINI PROMPT
-                 </Button>
-               </div>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 2: PARSE */}
-        {step === 2 && (
-          <div className="bg-gray-900/50 p-6 rounded-xl border border-gray-800 space-y-4">
-             <div className="flex items-start space-x-3 bg-blue-900/20 p-4 rounded border border-blue-900/50">
-               <div className="p-2 bg-blue-900/50 rounded-full">
-                 <Copy className="w-4 h-4 text-blue-400" />
-               </div>
-               <div>
-                 <h4 className="text-blue-400 font-bold text-sm">Waiting for AI Data</h4>
-                 <p className="text-xs text-blue-300/70 mt-1">
-                   Paste the prompt into Gemini. Copy the JSON response it gives you and paste it below.
-                 </p>
-               </div>
-             </div>
-
-             <textarea 
-               value={geminiJson}
-               onChange={e => setGeminiJson(e.target.value)}
-               className="w-full h-80 bg-black border border-gray-700 p-4 rounded font-mono text-xs text-green-400 focus:outline-none focus:border-green-500 transition-colors"
-               placeholder='{ "matches": [ ... ] }'
-             />
-
-             <div className="flex space-x-4">
-               <Button variant="outline" onClick={() => setStep(1)} className="flex-1 py-6">Back to Config</Button>
-               <Button onClick={handleParse} className="flex-[2] bg-cyan-600 hover:bg-cyan-500 font-bold py-6">
-                 PARSE JSON DATA
-               </Button>
-             </div>
-          </div>
-        )}
-
-        {/* STEP 3: PREVIEW */}
-        {step === 3 && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between bg-gray-900 p-4 rounded-lg border border-gray-800">
-               <div>
-                 <h2 className="text-xl font-bold text-white">{platform} - {variant}</h2>
-                 <p className="text-sm text-gray-400">{parsedGames.length} Matches • Week {week}</p>
-               </div>
-               <div className="text-right">
-                 <Badge className="bg-purple-900 text-purple-200 border-purple-700 block mb-1">{strategy}</Badge>
-                 <span className="text-[10px] text-gray-500 font-mono">
-                    Timeframe extracted from matches
-                 </span>
-               </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {parsedGames.map((game, i) => (
-                <div key={i} className="bg-black border border-gray-800 p-3 rounded flex flex-col space-y-2">
-                   <div className="flex justify-between items-start">
-                      <span className="text-xs text-gray-500 font-bold">#{game.match_id}</span>
-                      <div className="text-right">
-                        <Badge variant="outline" className="border-cyan-500 text-cyan-400 font-bold mb-1">{game.prediction}</Badge>
-                        <div className="text-[10px] text-gray-500">
-                          {game.kickoff ? new Date(game.kickoff).toLocaleString() : 'No Date'}
-                        </div>
-                      </div>
-                   </div>
-                   <div className="font-bold text-sm text-gray-300 truncate">{game.match_name}</div>
-                   <div className="text-[10px] text-gray-500">{game.reason}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex space-x-4 pt-8 border-t border-gray-800">
-               <Button variant="outline" onClick={() => setStep(2)} className="flex-1 py-6">Back</Button>
-               <Button 
-                 onClick={handleSaveToInventory} 
-                 disabled={loading}
-                 className="flex-[2] bg-green-600 hover:bg-green-500 font-bold py-6 text-lg shadow-[0_0_20px_rgba(22,163,74,0.3)]"
-               >
-                 {loading ? 'SAVING TO INVENTORY...' : 'CONFIRM & SAVE'}
-               </Button>
-            </div>
-          </div>
-        )}
-
+            );
+          })}
+        </div>
       </div>
     </div>
   );

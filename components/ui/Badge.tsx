@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   children: React.ReactNode;
-  variant?: 'default' | 'secondary' | 'outline' | 'destructive' | 'success' | 'warning' | 'neon';
+  variant?: 'default' | 'secondary' | 'outline' | 'destructive' | 'success' | 'warning' | 'neon' | 'winner' | 'protocol';
   className?: string;
 }
 
@@ -11,7 +11,7 @@ export function Badge({ children, variant = 'default', className, ...props }: Ba
   const variants = {
     // Standard Neutrals
     default: "bg-gray-800 text-gray-300 border-transparent",
-    secondary: "bg-gray-700 text-gray-400 border-transparent", // <--- Added back for 'Refunded' states
+    secondary: "bg-gray-700 text-gray-400 border-transparent",
     outline: "border border-gray-700 text-gray-400",
     
     // Status Indicators
@@ -21,12 +21,14 @@ export function Badge({ children, variant = 'default', className, ...props }: Ba
     
     // Special Effects
     neon: "bg-cyan-900/30 text-cyan-400 border border-cyan-500/50 shadow-[0_0_10px_rgba(34,211,238,0.2)]",
+    winner: "bg-yellow-500/10 text-yellow-500 border-yellow-500/50 uppercase tracking-tighter shadow-[0_0_15px_rgba(234,179,8,0.2)]",
+    protocol: "bg-purple-900/30 text-purple-300 border-purple-500/30 font-black tracking-widest",
   };
 
   return (
     <span 
       className={cn(
-        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border", 
+        "inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] md:text-xs font-bold border transition-all duration-300", 
         variants[variant], 
         className
       )}

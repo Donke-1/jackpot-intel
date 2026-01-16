@@ -1,54 +1,50 @@
-export type CycleCategory = 'Quickfire' | 'Hunter' | 'Accumulator';
-export type CycleStatus = 'active' | 'success' | 'failed' | 'completed';
+export type CycleCategory = 'Quickfire' | 'Hunter' | 'Accumulator' | 'sports';
+// Added 'pending_extension' here to fix your overlapping types error
+export type CycleStatus = 'active' | 'success' | 'failed' | 'completed' | 'pending_extension';
 
 export interface Cycle {
-  id: string;           // "HUNTER-JAN-26"
-  name: string;         // "The January Hunter"
-  category: CycleCategory; 
+  id: string;
+  name: string;
+  category: CycleCategory | string; 
   status: CycleStatus;
-  current_week: number; // 1, 2, 3...
-  total_wins: number;
-  target_wins: number;
-  target_desc: string;  // "Hit 12/17 Bonus"
-  events?: Event[];     // Optional: Loaded via join
+  current_week: number;
+  total_wins?: number; // Optional in new schema
+  target_wins?: number;
+  target_desc: string;
+  end_date: string;    // Added: This fixes the "Property does not exist" error
+  events?: Event[];
+  created_at?: string;
 }
 
 export interface Event {
-  id: number;
-  cycle_id: string;
+  id: string;          // Switched to string for UUID compatibility
+  jackpot_id: string;  // Added for the new Jackpot-level logic
+  cycle_id?: string;   
   week_number: number;
-  platform: 'SportPesa' | 'SportyBet' | 'Mozzart';
+  platform: string;
   event_name: string;
-  deadline: string;     // ISO Date String
+  deadline: string;
   is_active: boolean;
-  result_status: 'pending' | 'hit' | 'miss';
+  result_status?: 'pending' | 'hit' | 'miss';
   predictions?: Prediction[];
 }
 
 export interface Prediction {
-  id: number;
-  event_id: number;
+  id: string;
+  event_id: string;
   match_id: number;
   home_team: string;
   away_team: string;
-  match_time: string;
-  strat_a_pick: '1' | 'X' | '2';
-  strat_b_pick: '1' | 'X' | '2';
-  rationale: string;
+  match_name: string;
+  tip?: string;        // Added to match the ingest logic
+  strat_a_pick: '1' | 'X' | '2' | string;
+  strat_b_pick: '1' | 'X' | '2' | string;
+  rationale?: string;
   is_free: boolean;
-  result?: '1' | 'X' | '2' | null;
-  status: 'pending' | 'win' | 'loss' | 'void';
-}
-
-export interface Participant {
-  id: number;
-  user_id: string;
-  cycle_id: string;
-  sites_selected: string[] | null; // e.g., ['SportPesa', 'SportyBet']
-  personal_outcome: 'pending' | 'won' | 'lost' | 'missed_opportunity';
-  rollover_credit: boolean;
-  checklist_completed: boolean;
-  joined_at: string;
+  result?: '1' | 'X' | '2' | null | string;
+  is_correct?: boolean; // Added for the SQL Trigger logic
+  status: 'pending' | 'win' | 'loss' | 'void' | string;
+  confidence?: number;
 }
 
 export interface UserProfile {
@@ -59,7 +55,6 @@ export interface UserProfile {
   credits: number;
 }
 
-// --- NEW ADDITION ---
 export interface DailyTip {
   id: number;
   match_name: string;

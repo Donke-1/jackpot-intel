@@ -2,172 +2,210 @@
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Layers, Plus, Calendar, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Layers, Plus, Calendar, Ticket, Target, Clock, RefreshCcw } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import Link from 'next/link';
 
 export default function CycleManager() {
-  const [pendingJackpots, setPendingJackpots] = useState<any[]>([]);
+  const [inventory, setInventory] = useState<any[]>([]);
+  const [extendingCycles, setExtendingCycles] = useState<any[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [targetCycleId, setTargetCycleId] = useState<string | null>(null);
+  
   const [cycleName, setCycleName] = useState('');
+  const [goalType, setGoalType] = useState('1 Bonus Target');
+  const [creditCost, setCreditCost] = useState(1); // 👈 NEW: Dynamic Pricing
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // 1. Fetch Inventory
   useEffect(() => {
-    async function fetchInventory() {
-      const { data } = await supabase
+    async function fetchData() {
+      // 1. Fetch Inventory
+      const { data: inv } = await supabase
         .from('jackpots')
         .select('*')
-        .eq('status', 'pending') // Only show unused jackpots
-        .order('created_at', { ascending: false });
+        .in('status', ['pending', 'active']) 
+        .gt('end_date', new Date().toISOString()) 
+        .order('start_date', { ascending: true });
       
-      if (data) setPendingJackpots(data);
+      // 2. Fetch Cycles needing Rescue (Rollover)
+      const { data: ext } = await supabase
+        .from('cycles')
+        .select('*')
+        .eq('status', 'pending_extension');
+      
+      if (inv) setInventory(inv);
+      if (ext) setExtendingCycles(ext);
       setLoading(false);
     }
-    fetchInventory();
+    fetchData();
   }, []);
 
-  // 2. Handle Selection
   const toggleSelection = (id: string) => {
-    setSelectedIds(prev => 
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-    );
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   };
 
-  // 3. Publish Cycle
+  const getCycleWindow = () => {
+    if (selectedIds.length === 0) return null;
+    const selected = inventory.filter(j => selectedIds.includes(j.id));
+    const endDates = selected.map(j => new Date(j.end_date).getTime());
+    return new Date(Math.max(...endDates));
+  };
+
+  const cycleEnd = getCycleWindow();
+
+  // PUBLISH NEW CYCLE logic
   const handlePublish = async () => {
     if (!cycleName || selectedIds.length === 0) return alert("Name and Selection required");
     setSaving(true);
-
     try {
-      // A. Calculate End Date (The latest deadline of selected jackpots)
-      const selectedJackpots = pendingJackpots.filter(j => selectedIds.includes(j.id));
-      const dates = selectedJackpots.map(j => new Date(j.end_date).getTime());
-      const maxDate = new Date(Math.max(...dates));
-
-      // B. Create Cycle
+      const selectedJackpots = inventory.filter(j => selectedIds.includes(j.id));
       const { data: cycle, error: cycleError } = await supabase
         .from('cycles')
         .insert({
           id: crypto.randomUUID(),
           name: cycleName,
-          category: 'sports',
-          target_desc: `${selectedJackpots.length} Jackpots Bundle`,
+          category: 'Hunter', // Set to Hunter Protocol
+          target_desc: goalType,
+          credit_cost: creditCost, // 👈 Saved to DB
           status: 'active',
-          current_week: selectedJackpots[0]?.week_number || 42,
-          end_date: maxDate.toISOString()
+          current_week: selectedJackpots[0]?.week_number || 0,
+          end_date: cycleEnd?.toISOString()
         })
-        .select()
-        .single();
+        .select().single();
 
       if (cycleError) throw cycleError;
 
-      // C. Link Jackpots to Cycle
-      const links = selectedIds.map(jId => ({
-        cycle_id: cycle.id,
-        jackpot_id: jId
-      }));
+      const links = selectedIds.map(jId => ({ cycle_id: cycle.id, jackpot_id: jId }));
+      await supabase.from('cycle_jackpots').insert(links);
+      await supabase.from('jackpots').update({ status: 'active' }).in('id', selectedIds);
 
-      const { error: linkError } = await supabase.from('cycle_jackpots').insert(links);
-      if (linkError) throw linkError;
-
-      // D. Update Jackpots status to 'active'
-      await supabase
-        .from('jackpots')
-        .update({ status: 'active' })
-        .in('id', selectedIds);
-
-      alert("Cycle Published Successfully! It is now live on the dashboard.");
+      alert("Cycle Published Successfully!");
       window.location.reload();
+    } catch (err: any) { alert(err.message); }
+    setSaving(false);
+  };
 
-    } catch (err: any) {
-      alert("Error: " + err.message);
-    }
+  // EXTEND/ROLLOVER logic
+  const handleExtendCycle = async () => {
+    if (!targetCycleId || selectedIds.length === 0) return alert("Select a Cycle and Jackpots");
+    setSaving(true);
+    try {
+      const links = selectedIds.map(jId => ({ cycle_id: targetCycleId, jackpot_id: jId }));
+      await supabase.from('cycle_jackpots').insert(links);
+      await supabase
+        .from('cycles')
+        .update({ status: 'active', end_date: cycleEnd?.toISOString() })
+        .eq('id', targetCycleId);
+
+      alert("Cycle Extended Successfully!");
+      window.location.reload();
+    } catch (err: any) { alert(err.message); }
     setSaving(false);
   };
 
   return (
-    <div className="text-white space-y-8 animate-in fade-in">
-      <div className="flex items-center justify-between">
+    <div className="text-white space-y-8 animate-in fade-in pb-20 p-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-           <h1 className="text-3xl font-bold flex items-center">
-             <Layers className="mr-3 text-cyan-500" /> Cycle Manager
+           <h1 className="text-3xl font-black uppercase flex items-center tracking-tighter italic">
+             <Layers className="mr-3 text-cyan-500 w-8 h-8" /> Deployment Center
            </h1>
-           <p className="text-gray-400">Bundle pending jackpots into a live cycle.</p>
+           <p className="text-gray-400 text-sm">Bundle jackpots and set operational costs.</p>
         </div>
-        
         <div className="flex space-x-3">
-          {/* ✅ FIXED: Now links to the actual Ingest Page */}
-          <Link href="/admin/ingest">
-            <Button variant="outline">
-              <Plus className="w-4 h-4 mr-2" /> Ingest Data
+          <Link href="/admin/ingest"><Button variant="outline">Ingest</Button></Link>
+          {!targetCycleId && (
+            <Button onClick={handlePublish} disabled={saving || selectedIds.length === 0} className="bg-green-600 hover:bg-green-500 px-8 font-black">
+              {saving ? 'LAUNCHING...' : 'PUBLISH CYCLE'}
             </Button>
-          </Link>
-
-          <Button disabled={saving} onClick={handlePublish} className="bg-green-600 hover:bg-green-500 py-6 text-lg font-bold">
-            {saving ? 'PUBLISHING...' : 'PUBLISH LIVE CYCLE'}
-          </Button>
+          )}
         </div>
       </div>
 
-      {/* FORM */}
-      <div className="bg-gray-900/50 p-6 rounded-xl border border-gray-800">
-        <label className="block text-xs font-bold text-gray-500 mb-2 uppercase">Cycle Public Name</label>
-        <input 
-          type="text" 
-          value={cycleName}
-          onChange={(e) => setCycleName(e.target.value)}
-          placeholder="e.g. Weekend Millionaire Bundle (Week 42)"
-          className="w-full bg-black border border-gray-700 p-4 rounded text-xl font-bold text-white focus:border-cyan-500 outline-none"
-        />
-      </div>
+      {/* 🚩 RESCUE MODE SECTION */}
+      {extendingCycles.length > 0 && (
+        <div className="bg-amber-900/10 border border-amber-500/30 p-6 rounded-2xl space-y-4">
+          <h2 className="text-amber-500 font-black text-xs uppercase tracking-widest flex items-center">
+            <RefreshCcw className="w-4 h-4 mr-2" /> Pending Extensions
+          </h2>
+          <div className="flex flex-wrap gap-3">
+            {extendingCycles.map(c => (
+              <button key={c.id} onClick={() => setTargetCycleId(targetCycleId === c.id ? null : c.id)}
+                className={`px-4 py-3 rounded-xl border-2 transition-all text-left min-w-[200px] ${targetCycleId === c.id ? 'border-amber-500 bg-amber-500/20' : 'border-gray-800 bg-black'}`}>
+                <div className="text-sm font-bold">{c.name}</div>
+                <div className="text-[10px] text-gray-500">{c.target_desc}</div>
+              </button>
+            ))}
+          </div>
+          {targetCycleId && (
+            <div className="pt-4 border-t border-amber-500/20 flex items-center justify-between">
+              <p className="text-xs text-amber-300 italic">Select new jackpots below to attach and rescue this cycle.</p>
+              <Button onClick={handleExtendCycle} disabled={saving || selectedIds.length === 0} className="bg-amber-600 hover:bg-amber-500 font-black">EXECUTE ROLLOVER</Button>
+            </div>
+          )}
+        </div>
+      )}
 
-      {/* INVENTORY LIST */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {loading && <p className="text-gray-500">Loading inventory...</p>}
-        
-        {pendingJackpots.map((jackpot) => {
-          const isSelected = selectedIds.includes(jackpot.id);
-          return (
-            <div 
-              key={jackpot.id}
-              onClick={() => toggleSelection(jackpot.id)}
-              className={`
-                cursor-pointer relative p-5 rounded-xl border-2 transition-all
-                ${isSelected ? 'bg-cyan-900/20 border-cyan-500' : 'bg-black border-gray-800 hover:border-gray-600'}
-              `}
-            >
-              {isSelected && (
-                <div className="absolute top-3 right-3 text-cyan-500">
-                  <CheckCircle2 className="w-6 h-6 fill-current" />
-                </div>
-              )}
-              
-              <h3 className="font-bold text-lg">{jackpot.platform}</h3>
-              <p className="text-sm text-gray-400 mb-4">{jackpot.variant}</p>
-              
-              <div className="flex items-center justify-between text-xs">
-                 <Badge variant="outline">{jackpot.total_games} Games</Badge>
-                 <span className="text-gray-500 flex items-center">
-                   <Calendar className="w-3 h-3 mr-1" />
-                   Week {jackpot.week_number}
-                 </span>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-1 space-y-6">
+          <div className="bg-gray-900/40 p-6 rounded-3xl border border-gray-800 space-y-6 sticky top-6">
+            {!targetCycleId ? (
+              <div>
+                <label className="block text-xs font-black text-gray-500 mb-2 uppercase tracking-widest">Cycle Name</label>
+                <input type="text" value={cycleName} onChange={(e) => setCycleName(e.target.value)} className="w-full bg-black border border-gray-800 p-3 rounded-xl text-white outline-none focus:border-cyan-500" placeholder="e.g. Weekend Mega Hunter" />
+              </div>
+            ) : (
+              <div className="p-3 bg-amber-950/30 border border-amber-900 rounded-xl text-amber-200 text-xs font-bold text-center italic">RESCUE MODE ACTIVE</div>
+            )}
+            
+            <div>
+              <label className="block text-xs font-black text-gray-500 mb-2 uppercase tracking-widest">Pricing (Credits)</label>
+              <div className="relative">
+                <Ticket className="absolute left-3 top-3 w-4 h-4 text-cyan-500" />
+                <input type="number" value={creditCost} onChange={(e) => setCreditCost(parseInt(e.target.value))} className="w-full bg-black border border-gray-800 p-3 pl-10 rounded-xl text-white outline-none focus:border-cyan-500" />
               </div>
             </div>
-          );
-        })}
-        
-        {!loading && pendingJackpots.length === 0 && (
-          <div className="col-span-full text-center py-12 border border-dashed border-gray-800 rounded-xl">
-             <AlertCircle className="w-10 h-10 text-gray-600 mx-auto mb-3" />
-             <p className="text-gray-500">No pending jackpots found.</p>
-             <p className="text-xs text-gray-600">
-               Go to <Link href="/admin/ingest" className="text-cyan-500 underline">Data Ingestion</Link> to add some first.
-             </p>
+
+            <div>
+              <label className="block text-xs font-black text-gray-500 mb-2 uppercase tracking-widest">Success Goal</label>
+              <select value={goalType} onChange={(e) => setGoalType(e.target.value)} className="w-full bg-black border border-gray-800 p-3 rounded-xl text-white outline-none focus:border-cyan-500 appearance-none">
+                <option>1 Bonus Target</option>
+                <option>2 Bonus Target</option>
+                <option>Full Jackpot Hit</option>
+              </select>
+            </div>
+
+            {cycleEnd && (
+              <div className="p-4 bg-cyan-950/20 border border-cyan-900/50 rounded-2xl">
+                <div className="flex items-center text-cyan-400 text-[10px] font-black mb-1 uppercase tracking-widest"><Clock className="w-3 h-3 mr-2" /> Timeline Maximum</div>
+                <div className="text-xl font-mono text-white">{cycleEnd.toLocaleDateString()}</div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
+
+        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+          {inventory.map((jackpot) => {
+            const isSelected = selectedIds.includes(jackpot.id);
+            return (
+              <div key={jackpot.id} onClick={() => toggleSelection(jackpot.id)} className={`cursor-pointer p-6 rounded-2xl border-2 transition-all ${isSelected ? 'bg-cyan-900/10 border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.1)]' : 'bg-gray-900/20 border-gray-800 hover:border-gray-700'}`}>
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-black text-white italic">{jackpot.platform}</h3>
+                  <Badge variant="outline" className="text-[10px] font-mono">{jackpot.variant}</Badge>
+                </div>
+                <div className="text-[10px] text-gray-500 flex items-center mb-6 uppercase font-bold">
+                  <Calendar className="w-3 h-3 mr-1" /> {new Date(jackpot.start_date).toLocaleDateString()}
+                </div>
+                <div className="flex justify-between items-center">
+                  <Badge variant="secondary" className="bg-gray-800 border-none">{jackpot.total_games} Games</Badge>
+                  <span className="text-[9px] text-gray-600 font-black uppercase tracking-tighter">Week {jackpot.week_number}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
