@@ -103,7 +103,6 @@ async function settleCycle(cycleId, winningPlatform) {
         // SCENARIO A: The Cycle Failed Globally
         if (!winningPlatform) {
             outcome = 'lost';
-        // Note: For "Hunter" cycles, we might not close it here, but let's assume this closes the week.
         } else {
             const userSites = user.sites_selected || [];
             const hasFullBundle = userSites.includes('ALL');
@@ -116,32 +115,37 @@ async function settleCycle(cycleId, winningPlatform) {
                 giveCredit = true;
             }
         }
-        // Update the participant record
-        // If we give credit, we also update the profile credits
-        const updates = [];
-        // Update Participation Record
-        updates.push(supabase.from('participants').update({
+        // Prepare Update Promises
+        const userUpdates = [];
+        // A. Update Participation Record
+        userUpdates.push(supabase.from('participants').update({
             personal_outcome: outcome,
             rollover_credit: giveCredit
         }).eq('id', user.id));
-        // Update Profile Credits (if applicable)
+        // B. Update Profile Stats (Credits OR Wins)
         if (giveCredit) {
-            // We need to fetch current credits first to increment safely, or use an RPC.
-            // For simplicity in MVP, we do a quick fetch-update or assume an RPC exists.
-            // Let's do a safe RPC call if possible, or a direct increment.
-            // Since we don't have an 'increment' RPC set up yet, we will fetch-update.
+            // Increment Credits
             const { data: p } = await supabase.from('profiles').select('credits').eq('id', user.id).single();
             if (p) {
-                updates.push(supabase.from('profiles').update({
+                userUpdates.push(supabase.from('profiles').update({
                     credits: (p.credits || 0) + 1
                 }).eq('id', user.id));
             }
+        } else if (outcome === 'won') {
+            // Increment Total Wins
+            const { data: p } = await supabase.from('profiles').select('total_wins').eq('id', user.id).single();
+            if (p) {
+                userUpdates.push(supabase.from('profiles').update({
+                    total_wins: (p.total_wins || 0) + 1
+                }).eq('id', user.id));
+            }
         }
-        return Promise.all(updates);
+        return Promise.all(userUpdates);
     });
     await Promise.all(updates);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$cache$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["revalidatePath"])('/dashboard');
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$cache$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["revalidatePath"])('/account');
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$cache$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["revalidatePath"])('/'); // Update landing page leaderboard
     return {
         success: true
     };

@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Trophy, Users, Activity, Target, Crown } from 'lucide-react';
+import { Trophy, Users, Activity, Target, Crown, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Link from 'next/link'; // <--- Added for navigation
 
 export default function LiveIntel() {
   const [feedItems, setFeedItems] = useState<any[]>([]);
@@ -26,7 +27,6 @@ export default function LiveIntel() {
       }
 
       // 2. Get "Top Agents" - RANKED BY TOTAL WINS
-      // Note: We filter out null usernames to keep the list clean
       const { data: profiles } = await supabase
         .from('profiles')
         .select('username, total_wins')
@@ -51,7 +51,7 @@ export default function LiveIntel() {
         <h3 className="text-sm font-bold text-green-400 tracking-widest uppercase">Live Network Feed</h3>
       </div>
 
-      {/* CARD 1: CYCLE FEED */}
+      {/* CARD 1: CYCLE FEED (CLICKABLE) */}
       <div className="bg-black/40 border border-gray-800 rounded-xl p-6 backdrop-blur-md">
         <div className="flex items-center space-x-3 mb-4 text-cyan-400">
           <Target className="w-5 h-5" />
@@ -65,10 +65,16 @@ export default function LiveIntel() {
         ) : (
           <div className="space-y-4">
             {feedItems.map((cycle, i) => (
-              <div key={i} className="flex justify-between items-center border-b border-gray-800 pb-2 last:border-0 last:pb-0">
+              <Link 
+                href={`/dashboard/cycle/${cycle.id}`} 
+                key={i} 
+                className="group flex justify-between items-center border-b border-gray-800 pb-2 last:border-0 last:pb-0 cursor-pointer hover:bg-gray-800/50 rounded px-2 -mx-2 transition-colors"
+              >
                 <div>
                   <div className="flex items-center space-x-2">
-                    <p className="text-white font-bold text-sm">{cycle.name}</p>
+                    <p className="text-white font-bold text-sm group-hover:text-cyan-400 transition-colors">
+                      {cycle.name}
+                    </p>
                     {cycle.status === 'active' && (
                        <span className="bg-yellow-900/30 text-yellow-500 text-[10px] px-1.5 py-0.5 rounded border border-yellow-900 animate-pulse">
                          LIVE
@@ -78,18 +84,16 @@ export default function LiveIntel() {
                   <p className="text-xs text-gray-500">{cycle.target_desc}</p>
                 </div>
                 
-                <div className="text-right">
+                <div className="text-right flex items-center">
                   {cycle.status === 'success' ? (
                     <span className="bg-green-900/30 text-green-400 text-xs px-2 py-1 rounded border border-green-900 font-bold">
                       WON
                     </span>
                   ) : (
-                    <span className="text-xs text-gray-400 font-mono">
-                      Tracking...
-                    </span>
+                    <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-white transition-colors" />
                   )}
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}

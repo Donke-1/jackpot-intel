@@ -4,8 +4,16 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { Menu, X, Zap, LogOut, Wallet } from 'lucide-react';
+import { Menu, X, Zap, LogOut, Wallet, LayoutDashboard } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/Button';
+
+interface NavLink {
+  name: string;
+  href: string;
+  requiredAuth?: boolean;
+  hidden?: boolean;
+}
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,7 +22,6 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Check Auth State on Load
   useEffect(() => {
     async function getUser() {
       const { data: { user } } = await supabase.auth.getUser();
@@ -31,7 +38,6 @@ export default function Navbar() {
     }
     getUser();
 
-    // Listen for auth changes (login/logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (!session?.user) setCredits(0);
@@ -46,23 +52,23 @@ export default function Navbar() {
     router.refresh();
   };
 
-  // UPDATED: Added 'Results' to the navigation
-  const navLinks = [
+  const navLinks: NavLink[] = [
     { name: 'Home', href: '/' },
     { name: 'Dashboard', href: '/dashboard', requiredAuth: true },
-    { name: 'Results', href: '/results' }, // Public link for trust
-    { name: 'My Account', href: '/account', requiredAuth: true },
-    { name: 'Admin', href: '/admin', requiredAuth: true, hidden: true }, 
+    { name: 'Results', href: '/results' },
+    { name: 'Admin', href: '/admin', requiredAuth: true, hidden: true },
   ];
+
+  if (pathname?.startsWith('/dashboard') || pathname?.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-lg border-b border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          
-          {/* LOGO */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="bg-gradient-to-tr from-cyan-500 to-blue-600 p-1.5 rounded-lg">
+          <Link href="/" className="flex items-center space-x-2 group">
+            <div className="bg-gradient-to-tr from-cyan-500 to-blue-600 p-1.5 rounded-lg group-hover:scale-110 transition-transform">
               <Zap className="h-5 w-5 text-white fill-current" />
             </div>
             <span className="font-extrabold text-xl tracking-tighter text-white">
@@ -70,11 +76,9 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* DESKTOP NAV */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
               {navLinks.map((link) => {
-                // Hide links that require auth if user is not logged in
                 if (link.requiredAuth && !user) return null;
                 if (link.hidden) return null;
 
@@ -85,8 +89,8 @@ export default function Navbar() {
                     href={link.href}
                     className={cn(
                       "px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                      isActive 
-                        ? "text-cyan-400 bg-cyan-900/10" 
+                      isActive
+                        ? "text-cyan-400 bg-cyan-900/10"
                         : "text-gray-300 hover:text-white hover:bg-gray-800"
                     )}
                   >
@@ -97,20 +101,24 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* RIGHT SIDE (AUTH BUTTONS) */}
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <>
-                {/* Credit Balance Badge */}
-                <div className="flex items-center space-x-1 bg-gray-800 px-3 py-1 rounded-full border border-gray-700">
+                <div className="flex items-center space-x-1 bg-gray-900 px-3 py-1.5 rounded-full border border-gray-800">
                   <Wallet className="w-3 h-3 text-green-400" />
                   <span className="text-xs font-bold text-white">{credits} CR</span>
                 </div>
-                
-                {/* Logout */}
-                <button 
+
+                <Link href="/dashboard">
+                  <Button className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold h-9 text-xs">
+                    <LayoutDashboard className="w-3 h-3 mr-2" />
+                    ENTER APP
+                  </Button>
+                </Link>
+
+                <button
                   onClick={handleLogout}
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-gray-500 hover:text-red-400 transition-colors ml-2"
                   title="Sign Out"
                 >
                   <LogOut className="w-5 h-5" />
@@ -118,14 +126,14 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Link 
-                  href="/login" 
+                <Link
+                  href="/login"
                   className="text-gray-300 hover:text-white font-medium text-sm"
                 >
                   Login
                 </Link>
-                <Link 
-                  href="/login" 
+                <Link
+                  href="/login"
                   className="bg-green-600 hover:bg-green-500 text-white px-5 py-2 rounded-full font-bold text-sm shadow-[0_0_15px_rgba(22,163,74,0.4)] transition-all hover:scale-105"
                 >
                   Create Account
@@ -134,7 +142,6 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* MOBILE MENU BUTTON */}
           <div className="-mr-2 flex md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -146,7 +153,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* MOBILE MENU (DROPDOWN) */}
       {isOpen && (
         <div className="md:hidden bg-black border-b border-gray-800 animate-in slide-in-from-top-5">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
@@ -164,19 +170,18 @@ export default function Navbar() {
                 </Link>
               );
             })}
-            
-            {/* Mobile Auth Buttons */}
+
             {!user ? (
               <div className="mt-4 space-y-2 px-3">
-                 <Link 
-                  href="/login" 
+                <Link
+                  href="/login"
                   onClick={() => setIsOpen(false)}
                   className="block w-full text-center py-3 border border-gray-700 rounded-lg text-gray-300 font-bold"
                 >
                   Login
                 </Link>
-                <Link 
-                  href="/login" 
+                <Link
+                  href="/login"
                   onClick={() => setIsOpen(false)}
                   className="block w-full text-center py-3 bg-green-600 rounded-lg text-white font-bold"
                 >
@@ -185,9 +190,14 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="mt-4 px-3 border-t border-gray-800 pt-4">
-                <div className="flex items-center space-x-2 text-white font-bold mb-3">
-                   <Wallet className="w-4 h-4 text-green-400" />
-                   <span>{credits} Credits Available</span>
+                <div className="flex items-center justify-between text-white font-bold mb-3">
+                  <div className="flex items-center">
+                    <Wallet className="w-4 h-4 text-green-400 mr-2" />
+                    <span>{credits} CR</span>
+                  </div>
+                  <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+                    <Button size="sm" variant="outline">Enter App</Button>
+                  </Link>
                 </div>
                 <button
                   onClick={() => {

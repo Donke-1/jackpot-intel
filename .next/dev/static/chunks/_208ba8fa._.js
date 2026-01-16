@@ -10,21 +10,26 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/utils.ts [app-client] (ecmascript)");
 ;
 ;
-function Badge({ children, variant = 'default', className }) {
+function Badge({ children, variant = 'default', className, ...props }) {
     const variants = {
-        default: "bg-gray-800 text-gray-300",
+        // Standard Neutrals
+        default: "bg-gray-800 text-gray-300 border-transparent",
+        secondary: "bg-gray-700 text-gray-400 border-transparent",
         outline: "border border-gray-700 text-gray-400",
+        // Status Indicators
         destructive: "bg-red-900/50 text-red-400 border border-red-900",
         success: "bg-green-900/50 text-green-400 border border-green-900",
         warning: "bg-yellow-900/50 text-yellow-400 border border-yellow-900",
+        // Special Effects
         neon: "bg-cyan-900/30 text-cyan-400 border border-cyan-500/50 shadow-[0_0_10px_rgba(34,211,238,0.2)]"
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-        className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["cn"])("inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium", variants[variant], className),
+        className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["cn"])("inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border", variants[variant], className),
+        ...props,
         children: children
     }, void 0, false, {
         fileName: "[project]/components/ui/Badge.tsx",
-        lineNumber: 21,
+        lineNumber: 27,
         columnNumber: 5
     }, this);
 }
