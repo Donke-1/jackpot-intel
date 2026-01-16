@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/NEO/jackpot-intel-app/app/dashboard/layout.tsx"],"sourcesContent":["import React from 'react';\r\n\r\nexport default function DashboardLayout({\r\n  children,\r\n}: {\r\n  children: React.ReactNode;\r\n}) {\r\n  return (\r\n    <div className=\"min-h-screen bg-black\">\r\n      <main className=\"max-w-7xl mx-auto py-6 sm:px-6 lg:px-8\">\r\n        {children}\r\n      </main>\r\n    </div>\r\n  );\r\n}"],"names":[],"mappings":";;;;;;AAEe,SAAS,gBAAgB,EACtC,QAAQ,EAGT;IACC,qBACE,8OAAC;QAAI,WAAU;kBACb,cAAA,8OAAC;YAAK,WAAU;sBACb;;;;;;;;;;;AAIT"}}]
-}
