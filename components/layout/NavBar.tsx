@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { Menu, X, Zap, LogOut, Wallet, LayoutDashboard, Home } from 'lucide-react';
+import { Menu, X, Zap, LogOut, Wallet, LayoutDashboard, Home, LifeBuoy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 
@@ -54,24 +54,25 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push('/'); // marketing for guests
+    router.push('/');
     router.refresh();
   };
 
-  // Where “Home” should go
   const homeHref = user ? '/home' : '/';
 
+  // ✅ add Support here so it appears on mobile menu too
   const navLinks: NavLink[] = useMemo(
     () => [
       { name: 'Home', href: homeHref },
       { name: 'Live Intel', href: '/dashboard', requiredAuth: true },
       { name: 'Results', href: '/results' },
+      { name: 'Support', href: '/support' }, // ✅ added
       { name: 'Admin', href: '/admin', requiredAuth: true, hidden: true },
     ],
     [homeHref]
   );
 
-  // Keep navbar hidden inside app shells (dashboard/admin)
+  // Keep navbar hidden inside app shells (dashboard/admin) where Sidebar handles nav
   if (pathname?.startsWith('/dashboard') || pathname?.startsWith('/admin')) {
     return null;
   }
@@ -80,7 +81,6 @@ export default function Navbar() {
     <nav className="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-lg border-b border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* ✅ Brand now routes to /home for logged-in users */}
           <Link href={homeHref} className="flex items-center space-x-2 group">
             <div className="bg-gradient-to-tr from-cyan-500 to-blue-600 p-1.5 rounded-lg group-hover:scale-110 transition-transform">
               <Zap className="h-5 w-5 text-white fill-current" />
@@ -179,6 +179,7 @@ export default function Navbar() {
             {navLinks.map((link) => {
               if (link.requiredAuth && !user) return null;
               if (link.hidden) return null;
+
               return (
                 <Link
                   key={link.name}
@@ -215,22 +216,21 @@ export default function Navbar() {
                     <Wallet className="w-4 h-4 text-green-400 mr-2" />
                     <span>{credits} CR</span>
                   </div>
-                  <Link href="/home" onClick={() => setIsOpen(false)}>
-                    <Button size="sm" variant="outline">
-                      Home
-                    </Button>
+                  <Link href="/support" onClick={() => setIsOpen(false)} className="text-cyan-300 flex items-center gap-2">
+                    <LifeBuoy className="w-4 h-4" />
+                    Support
                   </Link>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 mb-3">
-                  <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+                  <Link href="/home" onClick={() => setIsOpen(false)}>
                     <Button size="sm" className="w-full bg-cyan-600 hover:bg-cyan-500 text-white">
-                      Live Intel
+                      Home
                     </Button>
                   </Link>
-                  <Link href="/jackpots" onClick={() => setIsOpen(false)}>
+                  <Link href="/dashboard" onClick={() => setIsOpen(false)}>
                     <Button size="sm" variant="outline" className="w-full border-gray-800 text-gray-200">
-                      Jackpot Shop
+                      Live Intel
                     </Button>
                   </Link>
                 </div>
