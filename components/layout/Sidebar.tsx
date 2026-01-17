@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
+  Home,
   LayoutDashboard,
   Database,
   Layers,
@@ -74,14 +75,8 @@ export default function Sidebar() {
 
   useEffect(() => {
     loadUserAndRole();
-
-    const { data: sub } = supabase.auth.onAuthStateChange(() => {
-      loadUserAndRole();
-    });
-
-    return () => {
-      sub?.subscription?.unsubscribe();
-    };
+    const { data: sub } = supabase.auth.onAuthStateChange(() => loadUserAndRole());
+    return () => sub?.subscription?.unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -98,6 +93,7 @@ export default function Sidebar() {
 
   const userLinks: NavItem[] = useMemo(
     () => [
+      { name: 'Home', href: '/home', icon: Home },
       { name: 'Live Intel', href: '/dashboard', icon: LayoutDashboard },
       { name: 'Jackpot Shop', href: '/jackpots', icon: ShoppingBag, badge: 'NEW' },
       { name: 'My Intel', href: '/dashboard/predictions', icon: Trophy },
@@ -167,7 +163,8 @@ export default function Sidebar() {
             <X className="w-6 h-6" />
           </button>
 
-          <Link href="/" className="flex items-center space-x-2 mb-8 cursor-pointer hover:opacity-80 transition-opacity">
+          {/* ✅ Brand now goes to /home */}
+          <Link href="/home" className="flex items-center space-x-2 mb-8 cursor-pointer hover:opacity-80 transition-opacity">
             <div className="w-8 h-8 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
               <span className="font-black text-white text-lg">J</span>
             </div>
@@ -191,7 +188,9 @@ export default function Sidebar() {
                   href={item.href}
                   className={cn(
                     'flex items-center justify-between px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200 group',
-                    isActive ? 'bg-gray-900 text-white border border-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-900/50'
+                    isActive
+                      ? 'bg-gray-900 text-white border border-gray-800'
+                      : 'text-gray-400 hover:text-white hover:bg-gray-900/50'
                   )}
                 >
                   <div className="flex items-center">
@@ -239,9 +238,7 @@ export default function Sidebar() {
                   <p className="text-[10px] text-gray-500">Switch Context</p>
                 </div>
               </div>
-              <ChevronRight
-                className={cn('w-4 h-4 text-gray-600 transition-transform duration-300', isAdminMode && 'rotate-90 text-red-500')}
-              />
+              <ChevronRight className={cn('w-4 h-4 text-gray-600 transition-transform duration-300', isAdminMode && 'rotate-90 text-red-500')} />
             </div>
           )}
 

@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { Menu, X, Zap, LogOut, Wallet, LayoutDashboard } from 'lucide-react';
+import { Menu, X, Zap, LogOut, Wallet, LayoutDashboard, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 
@@ -24,41 +24,54 @@ export default function Navbar() {
 
   useEffect(() => {
     async function getUser() {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+      const { data: auth } = await supabase.auth.getUser();
+      const u = auth?.user ?? null;
+      setUser(u);
 
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('credits')
-          .eq('id', user.id)
-          .single();
-        if (profile) setCredits(profile.credits);
+      if (u) {
+        const { data: profile } = await supabase.from('profiles').select('credits').eq('id', u.id).single();
+        setCredits(profile?.credits ?? 0);
+      } else {
+        setCredits(0);
       }
     }
+
     getUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (!session?.user) setCredits(0);
+    const { data: sub } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const u = session?.user ?? null;
+      setUser(u);
+      if (!u) {
+        setCredits(0);
+      } else {
+        const { data: profile } = await supabase.from('profiles').select('credits').eq('id', u.id).single();
+        setCredits(profile?.credits ?? 0);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    return () => sub.subscription.unsubscribe();
   }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push('/');
+    router.push('/'); // marketing for guests
     router.refresh();
   };
 
-  const navLinks: NavLink[] = [
-    { name: 'Home', href: '/' },
-    { name: 'Dashboard', href: '/dashboard', requiredAuth: true },
-    { name: 'Results', href: '/results' },
-    { name: 'Admin', href: '/admin', requiredAuth: true, hidden: true },
-  ];
+  // Where “Home” should go
+  const homeHref = user ? '/home' : '/';
 
+  const navLinks: NavLink[] = useMemo(
+    () => [
+      { name: 'Home', href: homeHref },
+      { name: 'Live Intel', href: '/dashboard', requiredAuth: true },
+      { name: 'Results', href: '/results' },
+      { name: 'Admin', href: '/admin', requiredAuth: true, hidden: true },
+    ],
+    [homeHref]
+  );
+
+  // Keep navbar hidden inside app shells (dashboard/admin)
   if (pathname?.startsWith('/dashboard') || pathname?.startsWith('/admin')) {
     return null;
   }
@@ -67,7 +80,8 @@ export default function Navbar() {
     <nav className="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-lg border-b border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center space-x-2 group">
+          {/* ✅ Brand now routes to /home for logged-in users */}
+          <Link href={homeHref} className="flex items-center space-x-2 group">
             <div className="bg-gradient-to-tr from-cyan-500 to-blue-600 p-1.5 rounded-lg group-hover:scale-110 transition-transform">
               <Zap className="h-5 w-5 text-white fill-current" />
             </div>
@@ -76,6 +90,7 @@ export default function Navbar() {
             </span>
           </Link>
 
+          {/* Desktop nav */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
               {navLinks.map((link) => {
@@ -88,10 +103,8 @@ export default function Navbar() {
                     key={link.name}
                     href={link.href}
                     className={cn(
-                      "px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                      isActive
-                        ? "text-cyan-400 bg-cyan-900/10"
-                        : "text-gray-300 hover:text-white hover:bg-gray-800"
+                      'px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                      isActive ? 'text-cyan-400 bg-cyan-900/10' : 'text-gray-300 hover:text-white hover:bg-gray-800'
                     )}
                   >
                     {link.name}
@@ -101,6 +114,7 @@ export default function Navbar() {
             </div>
           </div>
 
+          {/* Desktop actions */}
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <>
@@ -109,10 +123,17 @@ export default function Navbar() {
                   <span className="text-xs font-bold text-white">{credits} CR</span>
                 </div>
 
-                <Link href="/dashboard">
+                <Link href="/home">
                   <Button className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold h-9 text-xs">
+                    <Home className="w-3 h-3 mr-2" />
+                    HOME
+                  </Button>
+                </Link>
+
+                <Link href="/dashboard">
+                  <Button variant="outline" className="border-gray-800 text-gray-200 font-bold h-9 text-xs">
                     <LayoutDashboard className="w-3 h-3 mr-2" />
-                    ENTER APP
+                    LIVE INTEL
                   </Button>
                 </Link>
 
@@ -126,10 +147,7 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Link
-                  href="/login"
-                  className="text-gray-300 hover:text-white font-medium text-sm"
-                >
+                <Link href="/login" className="text-gray-300 hover:text-white font-medium text-sm">
                   Login
                 </Link>
                 <Link
@@ -142,6 +160,7 @@ export default function Navbar() {
             )}
           </div>
 
+          {/* Mobile menu button */}
           <div className="-mr-2 flex md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -153,6 +172,7 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* Mobile menu */}
       {isOpen && (
         <div className="md:hidden bg-black border-b border-gray-800 animate-in slide-in-from-top-5">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
@@ -195,10 +215,26 @@ export default function Navbar() {
                     <Wallet className="w-4 h-4 text-green-400 mr-2" />
                     <span>{credits} CR</span>
                   </div>
-                  <Link href="/dashboard" onClick={() => setIsOpen(false)}>
-                    <Button size="sm" variant="outline">Enter App</Button>
+                  <Link href="/home" onClick={() => setIsOpen(false)}>
+                    <Button size="sm" variant="outline">
+                      Home
+                    </Button>
                   </Link>
                 </div>
+
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+                    <Button size="sm" className="w-full bg-cyan-600 hover:bg-cyan-500 text-white">
+                      Live Intel
+                    </Button>
+                  </Link>
+                  <Link href="/jackpots" onClick={() => setIsOpen(false)}>
+                    <Button size="sm" variant="outline" className="w-full border-gray-800 text-gray-200">
+                      Jackpot Shop
+                    </Button>
+                  </Link>
+                </div>
+
                 <button
                   onClick={() => {
                     handleLogout();
