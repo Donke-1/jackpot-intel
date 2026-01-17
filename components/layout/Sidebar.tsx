@@ -99,6 +99,7 @@ export default function Sidebar() {
       { name: 'My Intel', href: '/dashboard/predictions', icon: Trophy },
       { name: 'Wallet & Credits', href: '/dashboard/wallet', icon: Wallet },
       { name: 'History', href: '/dashboard/history', icon: History },
+      { name: 'Support', href: '/support', icon: LifeBuoy }, // ✅ added
     ],
     []
   );
@@ -163,7 +164,7 @@ export default function Sidebar() {
             <X className="w-6 h-6" />
           </button>
 
-          {/* ✅ Brand now goes to /home */}
+          {/* Brand goes to /home */}
           <Link href="/home" className="flex items-center space-x-2 mb-8 cursor-pointer hover:opacity-80 transition-opacity">
             <div className="w-8 h-8 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
               <span className="font-black text-white text-lg">J</span>
@@ -238,7 +239,9 @@ export default function Sidebar() {
                   <p className="text-[10px] text-gray-500">Switch Context</p>
                 </div>
               </div>
-              <ChevronRight className={cn('w-4 h-4 text-gray-600 transition-transform duration-300', isAdminMode && 'rotate-90 text-red-500')} />
+              <ChevronRight
+                className={cn('w-4 h-4 text-gray-600 transition-transform duration-300', isAdminMode && 'rotate-90 text-red-500')}
+              />
             </div>
           )}
 
