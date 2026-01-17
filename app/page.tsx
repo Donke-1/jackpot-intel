@@ -6,7 +6,11 @@ export default async function Home() {
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase.auth.getUser();
 
-  if (data?.user) redirect('/home');
+  // Logged-in users (including admin) go to the real home console
+  if (data?.user) {
+    redirect('/home');
+  }
 
+  // Guests see marketing landing page
   return <LandingClient />;
 }

@@ -5,6 +5,20 @@ import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { Zap, Lock, User, Mail, AlertTriangle } from 'lucide-react';
 
+function getURL() {
+  // Prefer explicit site URL if you set it
+  let url =
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    process.env.NEXT_PUBLIC_VERCEL_URL ??
+    'http://localhost:3000';
+
+  // Vercel env sometimes provides host without protocol
+  url = url.startsWith('http') ? url : `https://${url}`;
+  // Ensure trailing slash for Supabase redirect consistency
+  url = url.endsWith('/') ? url : `${url}/`;
+  return url;
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
@@ -18,10 +32,10 @@ export default function LoginPage() {
   const [username, setUsername] = useState('');
 
   useEffect(() => {
-    // If already logged in, go to dashboard
+    // If already logged in, go to user home
     supabase.auth.getUser().then(({ data }) => {
       if (data?.user) {
-        router.push('/dashboard');
+        router.push('/home');
         router.refresh();
       }
     });
@@ -31,7 +45,6 @@ export default function LoginPage() {
     const name = usernameValue.trim();
     if (!name) return;
 
-    // Profiles RLS allows user to update own row.
     const { error } = await supabase
       .from('profiles')
       .upsert(
@@ -44,7 +57,6 @@ export default function LoginPage() {
       );
 
     if (error) {
-      // Not fatal for login; just log.
       // eslint-disable-next-line no-console
       console.error('Profile username upsert failed:', error);
     }
@@ -62,22 +74,21 @@ export default function LoginPage() {
           email,
           password,
           options: {
-            data: { username }, // kept (useful if you later read auth metadata)
+            data: { username },
+            // ✅ fixes localhost redirect in confirmation emails
+            emailRedirectTo: getURL(),
           },
         });
 
         if (error) throw error;
 
-        // If email confirmation is ON, session may be null.
-        // If it's OFF, session may exist immediately.
         const createdUser = data?.user;
-
         if (createdUser) {
           await upsertUsername(createdUser.id, email, username);
         }
 
         setInfo(
-          'Account created. If email confirmation is enabled, check your inbox to verify before signing in.'
+          'Account created. Check your email to verify your account (if confirmation is enabled), then sign in.'
         );
         setMode('signin');
         setPassword('');
@@ -90,12 +101,11 @@ export default function LoginPage() {
 
         const signedInUser = data?.user;
         if (signedInUser) {
-          // If user had chosen a username before, keep it; if not, this is harmless.
-          // Also ensures a profile row exists after DB resets.
           await upsertUsername(signedInUser.id, email, username);
         }
 
-        router.push('/dashboard');
+        // ✅ go to real user home
+        router.push('/home');
         router.refresh();
       }
     } catch (err: any) {
@@ -110,7 +120,6 @@ export default function LoginPage() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-cyan-900/20 blur-[100px] rounded-full pointer-events-none" />
 
       <div className="w-full max-w-md bg-gray-900/50 border border-gray-800 p-8 rounded-2xl backdrop-blur-md relative z-10 shadow-2xl">
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex p-3 bg-gray-800 rounded-xl mb-4 shadow-inner">
             <Zap className="w-8 h-8 text-cyan-500" />
@@ -119,18 +128,18 @@ export default function LoginPage() {
             {mode === 'signin' ? 'Welcome Back, Hunter.' : 'Initialize Identity'}
           </h1>
           <p className="text-gray-500 text-sm mt-2">
-            {mode === 'signin' ? 'Access the protocol dashboard.' : 'Create an account to unlock cycles and predictions.'}
+            {mode === 'signin'
+              ? 'Access your home console and live cycles.'
+              : 'Create an account to unlock cycles and predictions.'}
           </p>
         </div>
 
-        {/* Info Message */}
         {info && (
           <div className="mb-6 bg-cyan-900/20 border border-cyan-900/50 p-3 rounded-lg">
             <p className="text-sm text-cyan-200">{info}</p>
           </div>
         )}
 
-        {/* Error Message */}
         {error && (
           <div className="mb-6 bg-red-900/20 border border-red-900/50 p-3 rounded-lg flex items-start space-x-3">
             <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0" />
@@ -191,7 +200,7 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full py-4 bg-cyan-600 hover:bg-cyan-500 text-black font-bold rounded-lg transition-all shadow-[0_0_20px_rgba(8,145,178,0.3)] hover:shadow-[0_0_30px_rgba(8,145,178,0.5)] mt-2 disabled:opacity-60"
           >
-            {loading ? 'AUTHENTICATING...' : mode === 'signin' ? 'ACCESS DASHBOARD' : 'CREATE ACCOUNT'}
+            {loading ? 'AUTHENTICATING...' : mode === 'signin' ? 'ENTER HOME' : 'CREATE ACCOUNT'}
           </button>
         </form>
 
