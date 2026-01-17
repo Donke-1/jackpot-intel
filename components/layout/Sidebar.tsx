@@ -1,121 +1,168 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { 
-  LayoutDashboard, 
-  Database, 
-  Layers, 
-  Users, 
-  Trophy, 
-  Wallet, 
-  History, 
+import { usePathname, useRouter } from 'next/navigation';
+import {
+  LayoutDashboard,
+  Database,
+  Layers,
+  Users,
   ShieldAlert,
   LogOut,
   ChevronRight,
   UserCog,
   Menu,
   X,
-  LogIn
+  LogIn,
+  ClipboardList,
+  LifeBuoy,
+  Ticket,
+  ShoppingBag,
+  Wallet,
+  History,
+  Trophy,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import { Badge } from '@/components/ui/Badge';
 
+type NavItem = {
+  name: string;
+  href: string;
+  icon: any;
+  badge?: string;
+};
+
 export default function Sidebar() {
   const pathname = usePathname();
-  
-  // STATE
+  const router = useRouter();
+
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const [isRealAdmin, setIsRealAdmin] = useState(false); // The actual DB permission
+  const [isRealAdmin, setIsRealAdmin] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  // 1. Load User & Permissions
-  useEffect(() => {
-    async function init() {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (user) {
-        setUser(user);
-        
-        // CHECK IF ACTUALLY ADMIN IN DB
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('is_admin')
-          .eq('id', user.id)
-          .single();
+  async function loadUserAndRole() {
+    const { data } = await supabase.auth.getUser();
+    const u = data?.user ?? null;
+    setUser(u);
 
-        if (profile?.is_admin) {
-          setIsRealAdmin(true);
-          
-          // Restore toggle state ONLY if they are real admin
-          const savedMode = localStorage.getItem('jackpot_admin_mode');
-          if (savedMode === 'true') setIsAdminMode(true);
-        }
-      }
+    if (!u) {
+      setIsRealAdmin(false);
+      setIsAdminMode(false);
+      return;
     }
-    init();
+
+    const { data: profile, error } = await supabase.from('profiles').select('is_admin').eq('id', u.id).single();
+    if (error) {
+      setIsRealAdmin(false);
+      setIsAdminMode(false);
+      return;
+    }
+
+    const admin = Boolean(profile?.is_admin);
+    setIsRealAdmin(admin);
+
+    if (admin) {
+      const savedMode = localStorage.getItem('jackpot_admin_mode');
+      setIsAdminMode(savedMode === 'true');
+    } else {
+      setIsAdminMode(false);
+    }
+  }
+
+  useEffect(() => {
+    loadUserAndRole();
+
+    const { data: sub } = supabase.auth.onAuthStateChange(() => {
+      loadUserAndRole();
+    });
+
+    return () => {
+      sub?.subscription?.unsubscribe();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 2. Auto-close mobile menu on nav
   useEffect(() => {
     setIsMobileOpen(false);
   }, [pathname]);
 
   const toggleAdminMode = () => {
+    if (!isRealAdmin) return;
     const newMode = !isAdminMode;
     setIsAdminMode(newMode);
     localStorage.setItem('jackpot_admin_mode', String(newMode));
   };
 
-  const userLinks = [
-    { name: 'Live Intel', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'My Predictions', href: '/dashboard/predictions', icon: Trophy },
-    { name: 'Wallet & Credits', href: '/dashboard/wallet', icon: Wallet },
-    { name: 'History', href: '/dashboard/history', icon: History },
-  ];
+  const userLinks: NavItem[] = useMemo(
+    () => [
+      { name: 'Live Intel', href: '/dashboard', icon: LayoutDashboard },
+      { name: 'Jackpot Shop', href: '/jackpots', icon: ShoppingBag, badge: 'NEW' },
+      { name: 'My Intel', href: '/dashboard/predictions', icon: Trophy },
+      { name: 'Wallet & Credits', href: '/dashboard/wallet', icon: Wallet },
+      { name: 'History', href: '/dashboard/history', icon: History },
+    ],
+    []
+  );
 
-  const adminLinks = [
-    { name: 'Data Ingestion', href: '/admin/ingest', icon: Database, badge: 'AI' },
-    { name: 'Cycle Manager', href: '/admin/cycles', icon: Layers, badge: 'NEW' },
-    { name: 'User Base', href: '/admin/users', icon: Users },
-    { name: 'System Health', href: '/admin/system', icon: ShieldAlert },
-  ];
+  const adminLinks: NavItem[] = useMemo(
+    () => [
+      { name: 'Data Ingestion', href: '/admin/ingest', icon: Database, badge: 'AI' },
+      { name: 'Cycle Manager', href: '/admin/cycles', icon: Layers },
+      { name: 'Settling Queue', href: '/admin/settling', icon: ClipboardList },
+      { name: 'Pricing', href: '/admin/pricing', icon: Ticket, badge: '$' },
+      { name: 'User Base', href: '/admin/users', icon: Users },
+      { name: 'Support Inbox', href: '/admin/support', icon: LifeBuoy },
+      { name: 'System Health', href: '/admin/system', icon: ShieldAlert },
+    ],
+    []
+  );
 
-  // Logic: If in Admin Mode (and allowed), show Admin Links. Otherwise User Links.
-  const currentLinks = (isRealAdmin && isAdminMode) ? adminLinks : userLinks;
+  const currentLinks = isRealAdmin && isAdminMode ? adminLinks : userLinks;
+
+  const onLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    setIsAdminMode(false);
+    setIsRealAdmin(false);
+    router.push('/login');
+    router.refresh();
+  };
 
   return (
     <>
       {/* MOBILE TRIGGER */}
-      <button 
+      <button
         onClick={() => setIsMobileOpen(true)}
         className="md:hidden fixed top-4 left-4 z-50 p-2 bg-gray-900 border border-gray-700 rounded-lg text-white shadow-lg hover:bg-gray-800 transition-colors"
+        aria-label="Open menu"
       >
         <Menu className="w-5 h-5" />
       </button>
 
       {/* MOBILE BACKDROP */}
       {isMobileOpen && (
-        <div 
+        <div
           onClick={() => setIsMobileOpen(false)}
           className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 md:hidden animate-in fade-in"
         />
       )}
 
       {/* SIDEBAR */}
-      <div className={cn(
-        "w-64 h-screen bg-black border-r border-gray-800 flex flex-col justify-between fixed left-0 top-0 z-50 transition-transform duration-300 ease-in-out",
-        isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-      )}>
-        
+      <div
+        className={cn(
+          'w-64 h-screen bg-black border-r border-gray-800 flex flex-col justify-between fixed left-0 top-0 z-50 transition-transform duration-300 ease-in-out',
+          isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        )}
+      >
         {/* HEADER */}
         <div className="p-6 relative">
-          <button 
+          <button
             onClick={() => setIsMobileOpen(false)}
             className="absolute top-4 right-4 md:hidden text-gray-500 hover:text-white"
+            aria-label="Close menu"
           >
             <X className="w-6 h-6" />
           </button>
@@ -129,7 +176,6 @@ export default function Sidebar() {
             </span>
           </Link>
 
-          {/* NAV */}
           <nav className="space-y-1">
             {isRealAdmin && isAdminMode && (
               <div className="mb-4 px-2 text-xs font-bold text-red-500 uppercase tracking-widest flex items-center animate-pulse">
@@ -140,27 +186,26 @@ export default function Sidebar() {
             {currentLinks.map((item) => {
               const isActive = pathname === item.href;
               return (
-                <Link 
-                  key={item.name} 
+                <Link
+                  key={item.name}
                   href={item.href}
                   className={cn(
-                    "flex items-center justify-between px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200 group",
-                    isActive 
-                      ? "bg-gray-900 text-white border border-gray-800" 
-                      : "text-gray-400 hover:text-white hover:bg-gray-900/50"
+                    'flex items-center justify-between px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200 group',
+                    isActive ? 'bg-gray-900 text-white border border-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-900/50'
                   )}
                 >
                   <div className="flex items-center">
-                    <item.icon className={cn(
-                      "w-5 h-5 mr-3 transition-colors",
-                      isActive ? "text-cyan-500" : "text-gray-500 group-hover:text-gray-300"
-                    )} />
+                    <item.icon
+                      className={cn(
+                        'w-5 h-5 mr-3 transition-colors',
+                        isActive ? 'text-cyan-500' : 'text-gray-500 group-hover:text-gray-300'
+                      )}
+                    />
                     {item.name}
                   </div>
-                  {/* @ts-ignore */}
+
                   {item.badge && (
                     <Badge variant="neon" className="text-[10px] h-5 px-1.5">
-                      {/* @ts-ignore */}
                       {item.badge}
                     </Badge>
                   )}
@@ -172,52 +217,49 @@ export default function Sidebar() {
 
         {/* FOOTER */}
         <div className="p-4 bg-gray-900/30 border-t border-gray-800">
-          
-          {/* 🔒 ADMIN TOGGLE: ONLY VISIBLE IF ACTUALLY ADMIN */}
+          {/* ADMIN TOGGLE */}
           {isRealAdmin && (
-            <div 
+            <div
               onClick={toggleAdminMode}
               className="cursor-pointer mb-4 flex items-center justify-between p-3 rounded-lg border border-gray-800 bg-black hover:border-gray-700 transition-colors group"
             >
               <div className="flex items-center space-x-3">
-                <div className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center transition-colors",
-                  isAdminMode ? "bg-red-900/30 text-red-500" : "bg-gray-800 text-gray-400"
-                )}>
+                <div
+                  className={cn(
+                    'w-8 h-8 rounded-full flex items-center justify-center transition-colors',
+                    isAdminMode ? 'bg-red-900/30 text-red-500' : 'bg-gray-800 text-gray-400'
+                  )}
+                >
                   <UserCog className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className={cn("text-xs font-bold", isAdminMode ? "text-red-400" : "text-gray-300")}>
-                    {isAdminMode ? "Admin Console" : "User View"}
+                  <p className={cn('text-xs font-bold', isAdminMode ? 'text-red-400' : 'text-gray-300')}>
+                    {isAdminMode ? 'Admin Console' : 'User View'}
                   </p>
                   <p className="text-[10px] text-gray-500">Switch Context</p>
                 </div>
               </div>
-              <ChevronRight className={cn(
-                "w-4 h-4 text-gray-600 transition-transform duration-300",
-                isAdminMode && "rotate-90 text-red-500"
-              )} />
+              <ChevronRight
+                className={cn('w-4 h-4 text-gray-600 transition-transform duration-300', isAdminMode && 'rotate-90 text-red-500')}
+              />
             </div>
           )}
 
           {/* USER INFO / LOGIN */}
           {user ? (
             <div className="flex items-center justify-between px-2">
-               <div className="text-xs text-gray-500 truncate max-w-[120px]">
-                 {user.email}
-               </div>
-               <Link href="/login" className="text-gray-500 hover:text-white transition-colors" title="Logout">
-                 <LogOut className="w-4 h-4" />
-               </Link>
+              <div className="text-xs text-gray-500 truncate max-w-[150px]">{user.email}</div>
+              <button onClick={onLogout} className="text-gray-500 hover:text-white transition-colors" title="Logout" aria-label="Logout">
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
           ) : (
             <Link href="/login">
               <div className="flex items-center justify-center p-3 rounded-lg bg-cyan-900/20 border border-cyan-900/50 text-cyan-400 hover:bg-cyan-900/40 transition-colors cursor-pointer font-bold text-xs">
-                 <LogIn className="w-4 h-4 mr-2" /> Login / Join
+                <LogIn className="w-4 h-4 mr-2" /> Login / Join
               </div>
             </Link>
           )}
-
         </div>
       </div>
     </>

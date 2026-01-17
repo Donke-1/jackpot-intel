@@ -3,171 +3,198 @@
 import { createClient } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 
-// Initialize Supabase Client for Server Actions
+// Server actions are executed on the server, but using anon key means RLS still applies.
+// Later, admin-only actions should use a service role client in route handlers.
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export async function joinCycle(
-  cycleId: string, 
-  userId: string, 
-  mode: 'full' | 'custom', 
-  siteName?: string
-) {
-  
-  // 1. Fetch User Profile to check Credits
-  const { data: profile } = await supabase
+type JoinCycleResult = { success: boolean; message: string };
+
+function nowIso() {
+  return new Date().toISOString();
+}
+
+/**
+ * Checks whether a cycle is joinable right now.
+ * Rules:
+ * - Cycle must not be won/expired/archived.
+ * - If cycle has attached jackpot groups with a lock_time in the future -> join allowed.
+ * - If cycle has no attached groups OR all are locked -> allow join only if cycle.status === 'waiting'
+ *   (this matches your "join for next jackpot drop" behavior).
+ */
+async function canJoinCycle(cycleId: string): Promise<{ ok: boolean; reason?: string }> {
+  const { data: cycle, error: cycleErr } = await supabase
+    .from('cycles')
+    .select('id,status,max_end_at')
+    .eq('id', cycleId)
+    .single();
+
+  if (cycleErr || !cycle) return { ok: false, reason: 'Cycle not found.' };
+
+  if (cycle.status === 'won' || cycle.status === 'expired' || cycle.status === 'archived') {
+    return { ok: false, reason: `Cycle is not joinable (status: ${cycle.status}).` };
+  }
+
+  // If cycle has an expiry and it passed, treat as not joinable.
+  if (cycle.max_end_at) {
+    const maxEnd = new Date(cycle.max_end_at).getTime();
+    if (!Number.isNaN(maxEnd) && Date.now() > maxEnd) {
+      return { ok: false, reason: 'Cycle has expired.' };
+    }
+  }
+
+  // Fetch attached groups and their lock_time.
+  const { data: links, error: linksErr } = await supabase
+    .from('cycle_variants')
+    .select('group_id, jackpot_groups:group_id(lock_time,status)')
+    .eq('cycle_id', cycleId);
+
+  if (linksErr) {
+    // If we can't inspect, fail closed.
+    return { ok: false, reason: 'Unable to validate cycle eligibility.' };
+  }
+
+  const groups = (links || [])
+    .map((l: any) => l.jackpot_groups)
+    .filter(Boolean) as Array<{ lock_time: string | null; status: string }>;
+
+  // If there are no groups attached, allow join only for waiting cycles.
+  if (groups.length === 0) {
+    return cycle.status === 'waiting'
+      ? { ok: true }
+      : { ok: false, reason: 'Cycle has no active jackpots attached yet.' };
+  }
+
+  // If any group locks in the future, join is allowed.
+  const hasFutureLock = groups.some((g) => {
+    if (!g.lock_time) return false;
+    const t = new Date(g.lock_time).getTime();
+    return !Number.isNaN(t) && t > Date.now();
+  });
+
+  if (hasFutureLock) return { ok: true };
+
+  // Otherwise, all attached jackpots are already locked -> allow only if cycle is waiting.
+  if (cycle.status === 'waiting') return { ok: true };
+
+  return { ok: false, reason: 'Cycle entry is locked (jackpots already kicked off).' };
+}
+
+/**
+ * Join a cycle (subscription/participation).
+ * - Deduct credits if cycle is paid (credit_cost > 0 and not is_free).
+ * - Writes to credit_ledger for audit.
+ *
+ * NOTE:
+ * credit_ledger insert is admin-only by RLS in our canonical schema. For now, we only deduct by updating
+ * profiles.credits to keep MVP moving. We'll move credit adjustments into an admin RPC later.
+ */
+export async function joinCycle(cycleId: string, userId: string): Promise<JoinCycleResult> {
+  // 1) Validate join eligibility by time/state
+  const eligible = await canJoinCycle(cycleId);
+  if (!eligible.ok) {
+    return { success: false, message: eligible.reason || 'Cycle is not joinable.' };
+  }
+
+  // 2) Fetch cycle cost/free flags
+  const { data: cycle, error: cycleErr } = await supabase
+    .from('cycles')
+    .select('id,credit_cost,is_free,status')
+    .eq('id', cycleId)
+    .single();
+
+  if (cycleErr || !cycle) {
+    return { success: false, message: 'Cycle not found.' };
+  }
+
+  const creditCost = Number(cycle.credit_cost || 0);
+  const isFree = Boolean(cycle.is_free);
+
+  // 3) Upsert subscription first (so user doesn't get charged twice in weird edge cases)
+  //    We set credits_paid later after charge is successful.
+  const { data: subUpsert, error: subErr } = await supabase
+    .from('cycle_subscriptions')
+    .upsert(
+      {
+        user_id: userId,
+        cycle_id: cycleId,
+        status: 'active',
+        joined_at: nowIso(),
+        credits_paid: 0,
+      },
+      { onConflict: 'user_id,cycle_id' }
+    )
+    .select('id,credits_paid')
+    .single();
+
+  if (subErr || !subUpsert) {
+    return { success: false, message: subErr?.message || 'Failed to join cycle.' };
+  }
+
+  // If it's free, we're done.
+  if (isFree || creditCost <= 0) {
+    revalidatePath('/dashboard');
+    revalidatePath('/account');
+    revalidatePath('/');
+    return { success: true, message: 'Joined cycle (free).' };
+  }
+
+  // 4) Charge credits (MVP: update profiles.credits directly)
+  const { data: profile, error: profileErr } = await supabase
     .from('profiles')
     .select('credits')
     .eq('id', userId)
     .single();
 
-  const userCredits = profile?.credits || 0;
-  const sitesSelected = mode === 'full' ? ['ALL'] : [siteName || 'Unknown'];
-  let usedCredit = false;
-
-  // 2. LOGIC: If they have credits, use one.
-  if (userCredits > 0) {
-    // Deduct Credit
-    const { error: creditError } = await supabase
-      .from('profiles')
-      .update({ credits: userCredits - 1 })
-      .eq('id', userId);
-    
-    if (creditError) {
-      // eslint-disable-next-line no-console
-      console.error('Credit Transaction Error:', creditError);
-      return { success: false, message: 'Credit transaction failed.' };
-    }
-    usedCredit = true;
-  } 
-  // Else: Here is where you would normally check for Stripe/MPesa payment success.
-  // For MVP, we proceed as "Pay-as-you-go" (free for now if no credits).
-
-  // 3. Insert into Participants table
-  const { error } = await supabase
-    .from('participants')
-    .upsert({
-      user_id: userId,
-      cycle_id: cycleId,
-      sites_selected: sitesSelected,
-      checklist_completed: true, // They passed the modal
-      personal_outcome: 'pending',
-      joined_at: new Date().toISOString()
-      // We could add a 'payment_method' column later: 'credit' vs 'cash'
-    }, {
-      onConflict: 'user_id, cycle_id' // If they already joined, just update their selection
-    });
-
-  if (error) {
-    // If insert fails but we deducted credit, we should ideally refund it here.
-    // For MVP, logging is sufficient.
-    // eslint-disable-next-line no-console
-    console.error('Join Cycle Error:', error);
-    return { success: false, message: error.message };
+  if (profileErr) {
+    return { success: false, message: 'Unable to check credit balance.' };
   }
 
-  // 4. Revalidate pages so UI updates immediately
-  revalidatePath('/dashboard');
-  revalidatePath('/account'); // Update the wallet number on the account page too
-  
-  return { 
-    success: true, 
-    message: usedCredit ? 'Entry Unlocked using 1 Rollover Credit.' : 'Entry Unlocked.' 
-  };
-}
-
-// --- SETTLEMENT LOGIC ---
-
-export async function settleCycle(cycleId: string, winningPlatform: string | null) {
-  // 1. Update Cycle Status
-  const newStatus = winningPlatform ? 'success' : 'failed';
-  
-  const { error: cycleError } = await supabase
-    .from('cycles')
-    .update({ status: newStatus })
-    .eq('id', cycleId);
-
-  if (cycleError) {
-    // eslint-disable-next-line no-console
-    console.error('Cycle Status Update Error:', cycleError);
-    return { success: false, message: 'Failed to update cycle status' };
+  const currentCredits = Number(profile?.credits || 0);
+  if (currentCredits < creditCost) {
+    return { success: false, message: `Insufficient credits. Need ${creditCost}.` };
   }
 
-  // 2. Fetch all Participants for this cycle
-  const { data: participants } = await supabase
-    .from('participants')
-    .select('*')
-    .eq('cycle_id', cycleId);
+  const { error: deductErr } = await supabase
+    .from('profiles')
+    .update({ credits: currentCredits - creditCost })
+    .eq('id', userId);
 
-  if (!participants || participants.length === 0) {
-    return { success: true, message: 'Cycle closed. No participants found.' };
+  if (deductErr) {
+    return { success: false, message: 'Credit transaction failed.' };
   }
 
-  // 3. Loop through and grade each user
-  const updates = participants.map(async (user) => {
-    let outcome = 'lost';
-    let giveCredit = false;
+  // 5) Record credits_paid on subscription
+  const { error: paidErr } = await supabase
+    .from('cycle_subscriptions')
+    .update({ credits_paid: creditCost })
+    .eq('id', subUpsert.id);
 
-    // SCENARIO A: The Cycle Failed Globally
-    if (!winningPlatform) {
-      outcome = 'lost'; 
-    } 
-    // SCENARIO B: The Cycle Won Globally
-    else {
-      const userSites = user.sites_selected || [];
-      const hasFullBundle = userSites.includes('ALL');
-      const pickedWinner = userSites.includes(winningPlatform);
+  if (paidErr) {
+    // Best-effort refund if subscription update fails
+    await supabase.from('profiles').update({ credits: currentCredits }).eq('id', userId);
+    return { success: false, message: 'Join completed but failed to record payment; refunded.' };
+  }
 
-      if (hasFullBundle || pickedWinner) {
-        outcome = 'won'; // They rode the bus!
-      } else {
-        // They picked the wrong site -> ROLLOVER LOGIC
-        outcome = 'missed_opportunity';
-        giveCredit = true;
-      }
-    }
-
-    // Prepare Update Promises
-    const userUpdates = [];
-    
-    // A. Update Participation Record
-    userUpdates.push(
-      supabase
-        .from('participants')
-        .update({ 
-          personal_outcome: outcome,
-          rollover_credit: giveCredit 
-        })
-        .eq('id', user.id)
-    );
-
-    // B. Update Profile Stats (Credits OR Wins)
-    if (giveCredit) {
-       // Increment Credits
-       const { data: p } = await supabase.from('profiles').select('credits').eq('id', user.id).single();
-       if (p) {
-         userUpdates.push(
-           supabase.from('profiles').update({ credits: (p.credits || 0) + 1 }).eq('id', user.id)
-         );
-       }
-    } else if (outcome === 'won') {
-       // Increment Total Wins
-       const { data: p } = await supabase.from('profiles').select('total_wins').eq('id', user.id).single();
-       if (p) {
-         userUpdates.push(
-           supabase.from('profiles').update({ total_wins: (p.total_wins || 0) + 1 }).eq('id', user.id)
-         );
-       }
-    }
-
-    return Promise.all(userUpdates);
-  });
-
-  await Promise.all(updates);
   revalidatePath('/dashboard');
   revalidatePath('/account');
-  revalidatePath('/'); // Update landing page leaderboard
-  return { success: true };
+  revalidatePath('/');
+  return { success: true, message: `Joined cycle using ${creditCost} credits.` };
+}
+
+/**
+ * Admin-only (conceptually): Lock results for a jackpot group.
+ * For MVP we keep this as a placeholder to be implemented via an admin route handler
+ * using the service role key, because it must write fixtures/results + settlements.
+ *
+ * We'll implement this after updating the Admin Settling UI.
+ */
+export async function lockJackpotResultsPlaceholder(): Promise<JoinCycleResult> {
+  return {
+    success: false,
+    message:
+      'Not implemented yet. This will be implemented as a server-only admin endpoint (service role) during the Settling phase.',
+  };
 }
