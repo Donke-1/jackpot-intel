@@ -4,6 +4,19 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
+function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error('timeout')), ms);
+    p.then((v) => {
+      clearTimeout(t);
+      resolve(v);
+    }).catch((e) => {
+      clearTimeout(t);
+      reject(e);
+    });
+  });
+}
+
 export default function AdminRootRedirect() {
   const router = useRouter();
 
@@ -12,33 +25,46 @@ export default function AdminRootRedirect() {
 
     async function go() {
       try {
-        const nowIso = new Date().toISOString();
+        // ✅ stabilize auth (mobile resume / refresh spam)
+        const { data: sess } = await supabase.auth.getSession();
+        let user = sess?.session?.user ?? null;
 
-        // If there are items to settle, go straight to Settling Queue.
-        const { data, error } = await supabase
+        if (!user) {
+          const { data: refreshed } = await supabase.auth.refreshSession();
+          user = refreshed?.session?.user ?? null;
+        }
+
+        // If not logged in, go login
+        if (!user) {
+          if (!cancelled) router.replace('/login');
+          return;
+        }
+
+        // ✅ prevent endless spinner on slow networks
+        const query = supabase
           .from('jackpot_groups')
           .select('id,status,end_time')
           .neq('status', 'archived')
           .order('end_time', { ascending: false })
           .limit(25);
 
+        const { data, error } = await withTimeout(query, 6000);
+
+        if (cancelled) return;
+
         if (error || !data) {
-          if (!cancelled) router.replace('/admin/cycles');
+          router.replace('/admin/cycles');
           return;
         }
 
         const now = Date.now();
-        const hasSettlingWork = data.some((g: any) => {
-          const ended =
-            g.end_time && !Number.isNaN(new Date(g.end_time).getTime())
-              ? new Date(g.end_time).getTime() <= now
-              : false;
+        const hasSettlingWork = (data as any[]).some((g) => {
+          const end = g.end_time ? new Date(g.end_time).getTime() : NaN;
+          const ended = Number.isFinite(end) ? end <= now : false;
           return g.status === 'locked' || g.status === 'settling' || ended;
         });
 
-        if (!cancelled) {
-          router.replace(hasSettlingWork ? '/admin/settling' : '/admin/cycles');
-        }
+        router.replace(hasSettlingWork ? '/admin/settling' : '/admin/cycles');
       } catch {
         if (!cancelled) router.replace('/admin/cycles');
       }

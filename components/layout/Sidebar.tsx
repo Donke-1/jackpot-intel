@@ -55,6 +55,7 @@ export default function Sidebar() {
       return;
     }
 
+    // Read admin flag from profiles (requires your RLS to allow user read own profile)
     const { data: profile, error } = await supabase.from('profiles').select('is_admin').eq('id', u.id).single();
 
     if (error) {
@@ -120,9 +121,11 @@ export default function Sidebar() {
     []
   );
 
-  // ✅ Safe rule: only show admin links when you're actually in /admin/*
-  const isInAdminRoute = pathname?.startsWith('/admin');
-  const currentLinks = isRealAdmin && isAdminMode && isInAdminRoute ? adminLinks : userLinks;
+  const isInAdminRoute = pathname?.startsWith('/admin') ?? false;
+
+  // ✅ Key fix: if you are in /admin/*, always show admin links
+  // AdminLayout already enforces access, so this is safe and consistent.
+  const currentLinks = isInAdminRoute ? adminLinks : isRealAdmin && isAdminMode ? adminLinks : userLinks;
 
   const onLogout = async () => {
     await supabase.auth.signOut();
@@ -188,7 +191,7 @@ export default function Sidebar() {
           )}
 
           <nav className="space-y-1">
-            {isRealAdmin && isAdminMode && isInAdminRoute && (
+            {isRealAdmin && isAdminMode && (
               <div className="mb-4 px-2 text-xs font-bold text-red-500 uppercase tracking-widest flex items-center animate-pulse">
                 <ShieldAlert className="w-3 h-3 mr-2" /> Admin Console
               </div>
@@ -202,7 +205,9 @@ export default function Sidebar() {
                   href={item.href}
                   className={cn(
                     'flex items-center justify-between px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200 group',
-                    isActive ? 'bg-gray-900 text-white border border-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-900/50'
+                    isActive
+                      ? 'bg-gray-900 text-white border border-gray-800'
+                      : 'text-gray-400 hover:text-white hover:bg-gray-900/50'
                   )}
                 >
                   <div className="flex items-center">
