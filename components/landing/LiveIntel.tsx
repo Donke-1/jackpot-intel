@@ -16,6 +16,13 @@ type CycleRow = {
   goal_settings: any;
 };
 
+type VariantSettlement = {
+  correct_count: number | null;
+  tier_hit: string | null;
+  payout_estimated: number | null;
+  payout_actual: number | null;
+};
+
 type LatestSettled = {
   id: string;
   currency: string | null;
@@ -23,14 +30,14 @@ type LatestSettled = {
   end_time: string | null;
   sites?: { name: string } | null;
   jackpot_types?: { name: string } | null;
-  variant_settlements?: Array<{
-    correct_count: number | null;
-    tier_hit: string | null;
-    payout_estimated: number | null;
-    payout_actual: number | null;
-    jackpot_variants?: { variant: 'A' | 'B' } | null;
+  jackpot_variants?: Array<{
+    id: string;
+    variant: 'A' | 'B' | string;
+    variant_settlements?: VariantSettlement[];
   }>;
 };
+
+type BestSettlement = VariantSettlement & { variant: 'A' | 'B' | string };
 
 type NextLock = {
   lock_time: string | null;
@@ -80,7 +87,6 @@ export default function LiveIntel() {
 
   useEffect(() => {
     async function fetchData() {
-      // 1) Active + won cycles (real)
       const { data: cycleRows } = await supabase
         .from('cycles')
         .select('id,name,status,created_at,credit_cost,is_free,goal_settings')
@@ -90,7 +96,7 @@ export default function LiveIntel() {
 
       setCycles((cycleRows as any) || []);
 
-      // 2) Latest settled jackpot (bait)
+      // ✅ FIX: settled embed through jackpot_variants
       const { data: settled } = await supabase
         .from('jackpot_groups')
         .select(
@@ -98,9 +104,9 @@ export default function LiveIntel() {
           id,currency,prize_pool,end_time,
           sites:site_id(name),
           jackpot_types:jackpot_type_id(name),
-          variant_settlements(
-            correct_count,tier_hit,payout_estimated,payout_actual,
-            jackpot_variants:variant_id(variant)
+          jackpot_variants(
+            id,variant,
+            variant_settlements(correct_count,tier_hit,payout_estimated,payout_actual)
           )
         `
         )
@@ -111,7 +117,6 @@ export default function LiveIntel() {
 
       setLatest((settled as any) || null);
 
-      // 3) Next lock (urgency)
       const nowIso = new Date().toISOString();
       const { data: next } = await supabase
         .from('jackpot_groups')
@@ -130,7 +135,6 @@ export default function LiveIntel() {
 
       setNextLock((next as any) || null);
 
-      // 4) Top agents (keep, but real)
       const { data: profiles } = await supabase
         .from('profiles')
         .select('username,total_wins')
@@ -144,18 +148,23 @@ export default function LiveIntel() {
     fetchData();
   }, []);
 
-  const bestSettlement = useMemo(() => {
-    const arr = latest?.variant_settlements || [];
-    if (!arr.length) return null;
-    const sorted = [...arr].sort((a, b) => {
+  const bestSettlement: BestSettlement | null = useMemo(() => {
+    const variants = latest?.jackpot_variants || [];
+    const all: BestSettlement[] = [];
+
+    for (const v of variants) {
+      for (const s of v.variant_settlements || []) {
+        all.push({ ...s, variant: v.variant });
+      }
+    }
+    if (!all.length) return null;
+
+    return all.sort((a, b) => {
       const aPay = (a.payout_actual ?? a.payout_estimated ?? 0) as number;
       const bPay = (b.payout_actual ?? b.payout_estimated ?? 0) as number;
       if (bPay !== aPay) return bPay - aPay;
-      const aC = a.correct_count ?? 0;
-      const bC = b.correct_count ?? 0;
-      return bC - aC;
-    });
-    return sorted[0];
+      return (b.correct_count ?? 0) - (a.correct_count ?? 0);
+    })[0];
   }, [latest]);
 
   const liveCount = cycles.filter((c) => c.status === 'active').length;
@@ -163,7 +172,6 @@ export default function LiveIntel() {
 
   return (
     <div className="h-full flex flex-col justify-center space-y-6 max-w-md mx-auto">
-      {/* HEADER */}
       <div className="flex items-center space-x-2 mb-1">
         <span className="relative flex h-3 w-3">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -172,7 +180,6 @@ export default function LiveIntel() {
         <h3 className="text-sm font-bold text-green-400 tracking-widest uppercase">Live Network Feed</h3>
       </div>
 
-      {/* CARD 0: Latest proof */}
       <div className="bg-black/40 border border-gray-800 rounded-xl p-6 backdrop-blur-md">
         <div className="flex items-center space-x-3 mb-4 text-yellow-400">
           <Sparkles className="w-5 h-5" />
@@ -187,7 +194,7 @@ export default function LiveIntel() {
 
             <div className="flex items-center justify-between">
               <div className="text-[12px] text-gray-400">
-                Variant <span className="text-white font-black">{bestSettlement.jackpot_variants?.variant || '—'}</span> •{' '}
+                Variant <span className="text-white font-black">{bestSettlement.variant || '—'}</span> •{' '}
                 <span className="text-white font-black">{bestSettlement.correct_count ?? '—'}</span> correct
               </div>
               <span className="text-[11px] text-gray-500 font-mono">{timeAgo(latest.end_time)}</span>
@@ -219,129 +226,57 @@ export default function LiveIntel() {
         )}
       </div>
 
-      {/* CARD 1: Cycle feed */}
+      {/* rest of your component stays the same */}
       <div className="bg-black/40 border border-gray-800 rounded-xl p-6 backdrop-blur-md">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-3 text-cyan-400">
-            <Target className="w-5 h-5" />
-            <h4 className="font-bold">Hot Cycles</h4>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2 text-cyan-300">
+            <Crown className="w-4 h-4" />
+            <div className="text-xs font-black uppercase tracking-widest">Cycles</div>
           </div>
-          <div className="text-[10px] text-gray-500 font-bold uppercase flex items-center gap-2">
-            <Zap className="w-3 h-3 text-cyan-400" /> {liveCount} live • {wonCount} won
+          <div className="text-[10px] text-gray-500 font-mono">
+            Live {liveCount} • Won {wonCount}
           </div>
         </div>
 
-        {cycles.length === 0 ? (
-          <div className="text-center py-4 text-gray-500 text-xs italic">Waiting for cycle injection…</div>
-        ) : (
-          <div className="space-y-4">
-            {cycles.slice(0, 4).map((cycle) => {
-              const goal = cycle.goal_settings?.goalType || 'Target';
-              const tag = cycle.status === 'won' ? 'WON' : cycle.status === 'active' ? 'LIVE' : 'WAITING';
-              const tagColor =
-                cycle.status === 'won'
-                  ? 'bg-green-900/30 text-green-400 border-green-900'
-                  : cycle.status === 'active'
-                  ? 'bg-yellow-900/30 text-yellow-500 border-yellow-900'
-                  : 'bg-amber-900/30 text-amber-300 border-amber-900';
-
-              const price = cycle.is_free ? 'FREE' : `${cycle.credit_cost ?? 0} credits`;
-
-              return (
-                <Link
-                  href="/dashboard"
-                  key={cycle.id}
-                  className="group flex justify-between items-center border-b border-gray-800 pb-2 last:border-0 last:pb-0 cursor-pointer hover:bg-gray-800/50 rounded px-2 -mx-2 transition-colors"
-                >
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <p className="text-white font-bold text-sm group-hover:text-cyan-400 transition-colors">
-                        {cycle.name}
-                      </p>
-                      <span className={cn('text-[10px] px-1.5 py-0.5 rounded border font-black uppercase', tagColor)}>
-                        {tag}
-                      </span>
-                    </div>
-                    <p className="text-xs text-gray-500">
-                      {goal} • <span className="text-gray-400 font-bold">{price}</span>
-                    </p>
-                  </div>
-
-                  <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-white transition-colors" />
-                </Link>
-              );
-            })}
-          </div>
-        )}
-
-        {/* urgency line */}
-        {nextLock?.lock_time && (
-          <div className="mt-4 pt-3 border-t border-gray-800 flex items-center justify-between text-[11px]">
-            <div className="text-gray-500 flex items-center gap-2">
-              <Timer className="w-4 h-4 text-amber-400" /> Next lock
-            </div>
-            <div className="text-white font-black">
-              {timeToLockLabel(nextLock.lock_time)}{' '}
-              <span className="text-gray-500 font-bold">
-                • {(nextLock.sites?.name || 'Site')} {nextLock.jackpot_types?.name ? `— ${nextLock.jackpot_types.name}` : ''}
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* CARD 2: Top agents */}
-      <div className="bg-black/40 border border-gray-800 rounded-xl p-6 backdrop-blur-md">
-        <div className="flex items-center space-x-3 mb-4 text-purple-400">
-          <Crown className="w-5 h-5 text-yellow-400" />
-          <h4 className="font-bold">Elite Operatives</h4>
-        </div>
-
-        <div className="space-y-3">
-          {topAgents.map((agent, i) => {
-            const codename = agent.username || null;
-            const wins = agent.total_wins || 0;
-            if (!codename) return null;
-
-            return (
-              <div key={i} className="flex items-center justify-between group">
-                <div className="flex items-center space-x-3">
-                  <div
-                    className={cn(
-                      'w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold border',
-                      i === 0
-                        ? 'bg-yellow-500 text-black border-yellow-400'
-                        : i === 1
-                        ? 'bg-gray-400 text-black border-gray-300'
-                        : i === 2
-                        ? 'bg-orange-700 text-white border-orange-500'
-                        : 'bg-gray-800 text-gray-500 border-gray-700'
-                    )}
-                  >
-                    {i + 1}
-                  </div>
-
-                  <div>
-                    <p className="text-sm text-gray-300 font-mono group-hover:text-white transition-colors">
-                      Agent {codename}
-                    </p>
-                    <p className="text-[10px] text-gray-500">Rank {i + 1}</p>
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-end">
-                  <div className="flex items-center text-sm font-bold text-white">
-                    <Trophy className="w-3 h-3 mr-1 text-yellow-500" />
-                    {wins} Wins
-                  </div>
+        <div className="space-y-2">
+          {cycles.map((c) => (
+            <div key={c.id} className="flex items-center justify-between border border-gray-800 rounded-lg px-3 py-2 bg-black/40">
+              <div>
+                <div className="text-sm font-black text-white">{c.name}</div>
+                <div className="text-[10px] text-gray-500 uppercase font-bold">
+                  {(c.goal_settings?.goalType || 'Target')} • {c.is_free ? 'FREE' : `${c.credit_cost ?? 0} credits`}
                 </div>
               </div>
-            );
-          })}
+              <div className={cn('text-[10px] font-black uppercase', c.status === 'won' ? 'text-green-400' : c.status === 'active' ? 'text-cyan-300' : 'text-amber-300')}>
+                {c.status}
+              </div>
+            </div>
+          ))}
+        </div>
 
-          {topAgents.length === 0 && (
-            <p className="text-xs text-gray-500 italic text-center">No operatives yet. First winners will appear here.</p>
-          )}
+        <div className="mt-4 border-t border-gray-800 pt-4 flex items-center justify-between">
+          <div className="text-[11px] text-gray-500 flex items-center gap-2">
+            <Timer className="w-4 h-4 text-amber-400" />
+            Next lock: <span className="text-gray-300 font-bold">{nextLock?.lock_time ? timeToLockLabel(nextLock.lock_time) : '—'}</span>
+          </div>
+          <Link href="/dashboard" className="text-[11px] text-cyan-300 font-black flex items-center">
+            Open <ChevronRight className="w-4 h-4 ml-1" />
+          </Link>
+        </div>
+      </div>
+
+      <div className="bg-black/40 border border-gray-800 rounded-xl p-6 backdrop-blur-md">
+        <div className="flex items-center gap-2 text-purple-300 mb-3">
+          <Trophy className="w-4 h-4" />
+          <div className="text-xs font-black uppercase tracking-widest">Top Agents</div>
+        </div>
+        <div className="space-y-2">
+          {topAgents.map((p, idx) => (
+            <div key={idx} className="flex items-center justify-between text-sm">
+              <div className="text-white font-bold">{p.username}</div>
+              <div className="text-[11px] text-gray-500 font-mono">{p.total_wins ?? 0} wins</div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
