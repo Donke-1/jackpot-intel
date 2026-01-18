@@ -56,6 +56,7 @@ export default function Sidebar() {
     }
 
     const { data: profile, error } = await supabase.from('profiles').select('is_admin').eq('id', u.id).single();
+
     if (error) {
       // eslint-disable-next-line no-console
       console.error('Sidebar admin check failed:', error);
@@ -82,27 +83,9 @@ export default function Sidebar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Close mobile drawer on route change
   useEffect(() => {
     setIsMobileOpen(false);
   }, [pathname]);
-
-  // ✅ Prevent admin nav from “leaking” into user pages:
-  // Admin links are only shown while you're on /admin/*
-  useEffect(() => {
-    const isInAdminRoute = pathname?.startsWith('/admin');
-
-    if (!isInAdminRoute) {
-      // Hide admin menu on user routes (keeps saved toggle, but prevents confusing UI)
-      setIsAdminMode(false);
-      return;
-    }
-
-    if (isRealAdmin) {
-      const savedMode = localStorage.getItem('jackpot_admin_mode');
-      setIsAdminMode(savedMode === 'true');
-    }
-  }, [pathname, isRealAdmin]);
 
   const toggleAdminMode = () => {
     if (!isRealAdmin) return;
@@ -131,12 +114,13 @@ export default function Sidebar() {
       { name: 'Settling Queue', href: '/admin/settling', icon: ClipboardList },
       { name: 'Pricing', href: '/admin/pricing', icon: Ticket, badge: '$' },
       { name: 'User Base', href: '/admin/users', icon: Users },
-      { name: 'Support Inbox', href: '/admin/support', icon: LifeBuoy },
+      { name: 'Support Inbox', href: '/admin/support', icon: LifeBuoy, badge: 'NEW' },
       { name: 'System Health', href: '/admin/system', icon: ShieldAlert },
     ],
     []
   );
 
+  // ✅ Safe rule: only show admin links when you're actually in /admin/*
   const isInAdminRoute = pathname?.startsWith('/admin');
   const currentLinks = isRealAdmin && isAdminMode && isInAdminRoute ? adminLinks : userLinks;
 
@@ -151,7 +135,6 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* MOBILE TRIGGER */}
       <button
         onClick={() => setIsMobileOpen(true)}
         className="md:hidden fixed top-4 left-4 z-50 p-2 bg-gray-900 border border-gray-700 rounded-lg text-white shadow-lg hover:bg-gray-800 transition-colors"
@@ -160,7 +143,6 @@ export default function Sidebar() {
         <Menu className="w-5 h-5" />
       </button>
 
-      {/* MOBILE BACKDROP */}
       {isMobileOpen && (
         <div
           onClick={() => setIsMobileOpen(false)}
@@ -168,14 +150,12 @@ export default function Sidebar() {
         />
       )}
 
-      {/* SIDEBAR */}
       <div
         className={cn(
           'w-64 h-screen bg-black border-r border-gray-800 flex flex-col justify-between fixed left-0 top-0 z-50 transition-transform duration-300 ease-in-out',
           isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         )}
       >
-        {/* HEADER */}
         <div className="p-6 relative">
           <button
             onClick={() => setIsMobileOpen(false)}
@@ -185,7 +165,6 @@ export default function Sidebar() {
             <X className="w-6 h-6" />
           </button>
 
-          {/* Brand goes to /home */}
           <Link href="/home" className="flex items-center space-x-2 mb-4 cursor-pointer hover:opacity-80 transition-opacity">
             <div className="w-8 h-8 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
               <span className="font-black text-white text-lg">J</span>
@@ -195,7 +174,6 @@ export default function Sidebar() {
             </span>
           </Link>
 
-          {/* User email + admin indicator */}
           {user && (
             <div className="mb-6 flex items-center justify-between px-2">
               <div className="text-[10px] text-gray-600 font-bold uppercase tracking-widest truncate max-w-[160px]">
@@ -203,7 +181,7 @@ export default function Sidebar() {
               </div>
               {isRealAdmin && (
                 <Badge variant="outline" className="text-[9px] border-purple-900 text-purple-300">
-                  ADMIN
+                  ADMIN VERIFIED
                 </Badge>
               )}
             </div>
@@ -224,9 +202,7 @@ export default function Sidebar() {
                   href={item.href}
                   className={cn(
                     'flex items-center justify-between px-3 py-3 rounded-lg text-sm font-medium transition-all duration-200 group',
-                    isActive
-                      ? 'bg-gray-900 text-white border border-gray-800'
-                      : 'text-gray-400 hover:text-white hover:bg-gray-900/50'
+                    isActive ? 'bg-gray-900 text-white border border-gray-800' : 'text-gray-400 hover:text-white hover:bg-gray-900/50'
                   )}
                 >
                   <div className="flex items-center">
@@ -250,9 +226,7 @@ export default function Sidebar() {
           </nav>
         </div>
 
-        {/* FOOTER */}
         <div className="p-4 bg-gray-900/30 border-t border-gray-800">
-          {/* ADMIN TOGGLE */}
           {isRealAdmin && (
             <div
               onClick={toggleAdminMode}
@@ -274,22 +248,14 @@ export default function Sidebar() {
                   <p className="text-[10px] text-gray-500">Switch Context</p>
                 </div>
               </div>
-              <ChevronRight
-                className={cn('w-4 h-4 text-gray-600 transition-transform duration-300', isAdminMode && 'rotate-90 text-red-500')}
-              />
+              <ChevronRight className={cn('w-4 h-4 text-gray-600 transition-transform duration-300', isAdminMode && 'rotate-90 text-red-500')} />
             </div>
           )}
 
-          {/* USER INFO / LOGIN */}
           {user ? (
             <div className="flex items-center justify-between px-2">
               <div className="text-xs text-gray-500 truncate max-w-[150px]">{user.email}</div>
-              <button
-                onClick={onLogout}
-                className="text-gray-500 hover:text-white transition-colors"
-                title="Logout"
-                aria-label="Logout"
-              >
+              <button onClick={onLogout} className="text-gray-500 hover:text-white transition-colors" title="Logout" aria-label="Logout">
                 <LogOut className="w-4 h-4" />
               </button>
             </div>

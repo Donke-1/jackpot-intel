@@ -1,88 +1,94 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
-import { ShieldAlert, RefreshCcw, LogIn } from 'lucide-react';
+import { ShieldAlert, Loader2, RefreshCcw, LogIn } from 'lucide-react';
 import Sidebar from '@/components/layout/Sidebar';
 import { Button } from '@/components/ui/Button';
 
+type AdminState = 'loading' | 'authorized' | 'denied';
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [authorized, setAuthorized] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [state, setState] = useState<AdminState>('loading');
   const [softError, setSoftError] = useState<string | null>(null);
 
+  const watermark = useMemo(
+    () => (
+      <div className="absolute top-0 right-0 p-4 opacity-50 pointer-events-none">
+        <span className="text-[80px] font-black text-gray-900/30 leading-none select-none">ADMIN</span>
+      </div>
+    ),
+    []
+  );
+
   async function checkAdmin() {
-    setLoading(true);
+    setState('loading');
     setSoftError(null);
 
     try {
-      // 1) Try session first (more reliable on mobile resume)
+      // Prefer session (more resilient on mobile resume)
       const { data: sessionData } = await supabase.auth.getSession();
       let user = sessionData?.session?.user ?? null;
 
-      // 2) If missing user, attempt refresh session once
+      // If user missing, try refreshing session once
       if (!user) {
         const { data: refreshed } = await supabase.auth.refreshSession();
         user = refreshed?.session?.user ?? null;
       }
 
-      // 3) If still no user -> go login
       if (!user) {
-        setAuthorized(false);
-        setLoading(false);
-        router.push('/login');
+        // Not logged in
+        setState('denied');
         return;
       }
 
-      // 4) Check profile.is_admin
-      const { data: profile, error: profErr } = await supabase
+      // Check admin flag
+      const { data: profile, error: profileErr } = await supabase
         .from('profiles')
         .select('is_admin')
         .eq('id', user.id)
         .single();
 
-      if (profErr) {
-        // RLS or temporary network error. Don’t hang—show recover UI.
-        setAuthorized(false);
-        setSoftError(profErr.message);
-        setLoading(false);
+      if (profileErr) {
+        setSoftError(profileErr.message);
+        setState('denied');
         return;
       }
 
-      if (profile?.is_admin === true) {
-        setAuthorized(true);
-      } else {
-        setAuthorized(false);
-      }
-
-      setLoading(false);
+      setState(profile?.is_admin ? 'authorized' : 'denied');
     } catch (e: any) {
-      setAuthorized(false);
       setSoftError(e?.message || 'Authorization check failed.');
-      setLoading(false);
+      setState('denied');
     }
   }
 
   useEffect(() => {
-    checkAdmin();
+    let cancelled = false;
 
-    // Re-check when auth state changes (login/logout)
-    const { data: sub } = supabase.auth.onAuthStateChange(() => {
-      checkAdmin();
-    });
-
-    // Mobile browsers suspend tabs; re-check on resume
-    const onFocus = () => checkAdmin();
-    const onVis = () => {
-      if (document.visibilityState === 'visible') checkAdmin();
+    const safeCheck = async () => {
+      if (cancelled) return;
+      await checkAdmin();
     };
 
+    safeCheck();
+
+    // Re-check on auth changes
+    const { data: sub } = supabase.auth.onAuthStateChange(() => {
+      safeCheck();
+    });
+
+    // ✅ Critical for mobile: re-check when tab comes back
+    const onFocus = () => safeCheck();
+    const onVis = () => {
+      if (document.visibilityState === 'visible') safeCheck();
+    };
     window.addEventListener('focus', onFocus);
     document.addEventListener('visibilitychange', onVis);
 
     return () => {
+      cancelled = true;
       sub?.subscription?.unsubscribe();
       window.removeEventListener('focus', onFocus);
       document.removeEventListener('visibilitychange', onVis);
@@ -90,26 +96,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Loading state: show something visible + retry option
-  if (loading) {
+  if (state === 'loading') {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-6 text-gray-400">
-        <div className="text-center space-y-3">
-          <div className="w-10 h-10 rounded-full border-2 border-cyan-500 border-t-transparent animate-spin mx-auto" />
-          <div className="text-sm font-mono">Authorizing admin session…</div>
+      <div className="min-h-screen bg-black flex items-center justify-center text-gray-500">
+        <div className="flex items-center gap-2">
+          <Loader2 className="w-5 h-5 animate-spin text-cyan-500" />
+          <span className="text-sm font-mono">Authorizing admin session…</span>
         </div>
       </div>
     );
   }
 
-  // Access denied or error
-  if (!authorized) {
+  if (state === 'denied') {
     return (
-      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-center p-6">
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-center p-4">
         <ShieldAlert className="w-16 h-16 text-red-500 mb-4" />
         <h1 className="text-3xl font-bold text-white mb-2">ACCESS DENIED</h1>
         <p className="text-gray-500 mb-6">
-          {softError ? `Auth check error: ${softError}` : 'This area is restricted to admins.'}
+          {softError ? `Auth check error: ${softError}` : 'This area is restricted to administrators.'}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3">
@@ -137,15 +141,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  // Authorized admin layout
+  // Authorized
   return (
     <div className="flex min-h-screen bg-black">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-black p-6 md:p-12 relative">
-          <div className="absolute top-0 right-0 p-4 opacity-50 pointer-events-none">
-            <span className="text-[80px] font-black text-gray-900/30 leading-none select-none">ADMIN</span>
-          </div>
+          {watermark}
           <div className="relative z-10 max-w-6xl mx-auto">{children}</div>
         </main>
       </div>
