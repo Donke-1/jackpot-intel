@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import {
-  Zap,
   Trophy,
   Timer,
   ShoppingBag,
@@ -84,6 +83,7 @@ export default function HomePage() {
   const [user, setUser] = useState<any>(null);
 
   const [loadingData, setLoadingData] = useState(false);
+  const [softError, setSoftError] = useState<string | null>(null);
 
   const [username, setUsername] = useState<string | null>(null);
   const [credits, setCredits] = useState<number>(0);
@@ -92,106 +92,150 @@ export default function HomePage() {
   const [nextLock, setNextLock] = useState<NextLock | null>(null);
   const [latestSettled, setLatestSettled] = useState<LatestSettled | null>(null);
 
-  // 1) Auth bootstrap (don’t hard redirect)
+  // Race protection for fetchAll
+  const reqIdRef = useRef(0);
+
+  // 1) Auth bootstrap
   useEffect(() => {
+    let cancelled = false;
     let unsub: any;
 
     async function init() {
-      const { data } = await supabase.auth.getUser();
-      setUser(data?.user ?? null);
-      setAuthChecked(true);
+      try {
+        const { data, error } = await supabase.auth.getUser();
+        if (cancelled) return;
 
-      const { data: sub } = supabase.auth.onAuthStateChange((_evt, session) => {
-        setUser(session?.user ?? null);
-      });
-      unsub = sub?.subscription;
+        // If auth check fails transiently, still mark checked to avoid spinner forever
+        setUser(!error ? data?.user ?? null : null);
+        setAuthChecked(true);
+
+        const { data: sub } = supabase.auth.onAuthStateChange((_evt, session) => {
+          if (!cancelled) setUser(session?.user ?? null);
+        });
+        unsub = sub?.subscription;
+      } catch {
+        if (!cancelled) {
+          setUser(null);
+          setAuthChecked(true);
+        }
+      }
     }
 
     init();
 
     return () => {
+      cancelled = true;
       unsub?.unsubscribe?.();
     };
   }, []);
 
   // 2) Load data once we know user exists
   useEffect(() => {
+    if (!user) return;
+
+    let cancelled = false;
+    const myReqId = ++reqIdRef.current;
+
     async function fetchAll() {
-      if (!user) return;
-
       setLoadingData(true);
+      setSoftError(null);
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('credits,username')
-        .eq('id', user.id)
-        .single();
+      try {
+        const nowIso = new Date().toISOString();
 
-      setCredits(profile?.credits ?? 0);
-      setUsername(profile?.username ?? null);
+        const profileQ = supabase
+          .from('profiles')
+          .select('credits,username')
+          .eq('id', user.id)
+          .single();
 
-      const { data: cyc } = await supabase
-        .from('cycles')
-        .select('id,name,status,is_free,credit_cost,goal_settings,created_at')
-        .in('status', ['active', 'waiting', 'won'])
-        .order('created_at', { ascending: false })
-        .limit(12);
+        const cyclesQ = supabase
+          .from('cycles')
+          .select('id,name,status,is_free,credit_cost,goal_settings,created_at')
+          .in('status', ['active', 'waiting', 'won'])
+          .order('created_at', { ascending: false })
+          .limit(12);
 
-      setCycles((cyc as any) || []);
+        const subsQ = supabase
+          .from('cycle_subscriptions')
+          .select('cycle_id,status')
+          .eq('user_id', user.id);
 
-      const { data: subs } = await supabase
-        .from('cycle_subscriptions')
-        .select('cycle_id,status')
-        .eq('user_id', user.id);
-
-      const joined = new Set<string>();
-      (subs as any[] | null)?.forEach((s) => {
-        if (s.status === 'active') joined.add(s.cycle_id);
-      });
-      setJoinedCycleIds(joined);
-
-      const nowIso = new Date().toISOString();
-      const { data: next } = await supabase
-        .from('jackpot_groups')
-        .select(
+        const nextLockQ = supabase
+          .from('jackpot_groups')
+          .select(
+            `
+            id,lock_time,prize_pool,currency,
+            sites:site_id(name),
+            jackpot_types:jackpot_type_id(name)
           `
-          id,lock_time,prize_pool,currency,
-          sites:site_id(name),
-          jackpot_types:jackpot_type_id(name)
-        `
-        )
-        .in('status', ['draft', 'active'])
-        .gt('lock_time', nowIso)
-        .order('lock_time', { ascending: true })
-        .limit(1)
-        .maybeSingle();
-
-      setNextLock((next as any) || null);
-
-      const { data: settled } = await supabase
-        .from('jackpot_groups')
-        .select(
-          `
-          id,end_time,currency,prize_pool,
-          sites:site_id(name),
-          jackpot_types:jackpot_type_id(name),
-          variant_settlements(
-            correct_count,tier_hit,payout_estimated,payout_actual,
-            jackpot_variants:variant_id(variant)
           )
-        `
-        )
-        .eq('status', 'settled')
-        .order('end_time', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+          .in('status', ['draft', 'active'])
+          .gt('lock_time', nowIso)
+          .order('lock_time', { ascending: true })
+          .limit(1)
+          .maybeSingle();
 
-      setLatestSettled((settled as any) || null);
+        const settledQ = supabase
+          .from('jackpot_groups')
+          .select(
+            `
+            id,end_time,currency,prize_pool,
+            sites:site_id(name),
+            jackpot_types:jackpot_type_id(name),
+            variant_settlements(
+              correct_count,tier_hit,payout_estimated,payout_actual,
+              jackpot_variants:variant_id(variant)
+            )
+          `
+          )
+          .eq('status', 'settled')
+          .order('end_time', { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
-      setLoadingData(false);
+        const [
+          { data: profile, error: pErr },
+          { data: cyc, error: cErr },
+          { data: subs, error: sErr },
+          { data: next, error: nErr },
+          { data: settled, error: stErr },
+        ] = await Promise.all([profileQ, cyclesQ, subsQ, nextLockQ, settledQ]);
+
+        if (cancelled || myReqId !== reqIdRef.current) return;
+
+        // Soft errors (don’t hang UI)
+        const anyErr = pErr || cErr || sErr || nErr || stErr;
+        if (anyErr) {
+          setSoftError(anyErr.message || 'Some data failed to load (temporary).');
+        }
+
+        setCredits(profile?.credits ?? 0);
+        setUsername(profile?.username ?? null);
+
+        setCycles((cyc as any) || []);
+
+        const joined = new Set<string>();
+        (subs as any[] | null)?.forEach((row) => {
+          if (row.status === 'active') joined.add(row.cycle_id);
+        });
+        setJoinedCycleIds(joined);
+
+        setNextLock((next as any) || null);
+        setLatestSettled((settled as any) || null);
+      } catch (e: any) {
+        if (cancelled || myReqId !== reqIdRef.current) return;
+        setSoftError(e?.message || 'Failed to load home console data.');
+      } finally {
+        if (!cancelled && myReqId === reqIdRef.current) setLoadingData(false);
+      }
     }
 
     fetchAll();
+
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   const bestSettlement = useMemo(() => {
@@ -208,7 +252,6 @@ export default function HomePage() {
   const activeCycles = useMemo(() => cycles.filter((c) => c.status === 'active'), [cycles]);
   const wonCycles = useMemo(() => cycles.filter((c) => c.status === 'won'), [cycles]);
 
-  // Auth not checked yet
   if (!authChecked) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -217,7 +260,6 @@ export default function HomePage() {
     );
   }
 
-  // Not logged in -> show a friendly entry state (NO redirect loop)
   if (!user) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">
@@ -228,9 +270,7 @@ export default function HomePage() {
           </div>
           <div className="flex gap-3 justify-center pt-2">
             <Link href="/login">
-              <Button className="bg-cyan-500 hover:bg-cyan-400 text-black font-black">
-                Login
-              </Button>
+              <Button className="bg-cyan-500 hover:bg-cyan-400 text-black font-black">Login</Button>
             </Link>
             <Link href="/">
               <Button variant="outline" className="border-gray-800 text-gray-200">
@@ -259,6 +299,12 @@ export default function HomePage() {
             <p className="text-gray-500 mt-2">
               Your quick command center: cycles, proof, and next lock.
             </p>
+
+            {softError && (
+              <div className="mt-4 text-[11px] text-amber-300 bg-amber-950/20 border border-amber-900/40 rounded-xl p-3">
+                {softError}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-3">
@@ -299,7 +345,9 @@ export default function HomePage() {
                   </Badge>
                 </div>
                 <div className="mt-3 text-xl font-black">
-                  {nextLock ? `${nextLock.sites?.name || 'Site'} — ${nextLock.jackpot_types?.name || 'Jackpot'}` : 'No upcoming lock'}
+                  {nextLock
+                    ? `${nextLock.sites?.name || 'Site'} — ${nextLock.jackpot_types?.name || 'Jackpot'}`
+                    : 'No upcoming lock'}
                 </div>
                 <div className="mt-2 text-[12px] text-gray-500">
                   Pool:{' '}
@@ -333,7 +381,10 @@ export default function HomePage() {
                     <div className="mt-2 text-[12px] text-gray-500">
                       Est payout:{' '}
                       <span className="text-green-400 font-black">
-                        {fmtMoney(bestSettlement.payout_actual ?? bestSettlement.payout_estimated ?? null, latestSettled.currency)}
+                        {fmtMoney(
+                          bestSettlement.payout_actual ?? bestSettlement.payout_estimated ?? null,
+                          latestSettled.currency
+                        )}
                       </span>
                     </div>
                     <div className="mt-4">
@@ -367,7 +418,7 @@ export default function HomePage() {
                     <ImageIcon className="w-4 h-4" /> Gallery
                   </div>
                   <div className="rounded-2xl border border-gray-800 bg-black/40 p-3 text-[12px] text-gray-400 flex items-center gap-2">
-                    <Zap className="w-4 h-4" /> Slides
+                    <Sparkles className="w-4 h-4" /> Slides
                   </div>
                 </div>
               </div>
@@ -420,7 +471,11 @@ export default function HomePage() {
                               variant="outline"
                               className={cn(
                                 'text-[10px] border-gray-800',
-                                c.status === 'won' ? 'text-green-400' : c.status === 'active' ? 'text-cyan-300' : 'text-amber-300'
+                                c.status === 'won'
+                                  ? 'text-green-400'
+                                  : c.status === 'active'
+                                    ? 'text-cyan-300'
+                                    : 'text-amber-300'
                               )}
                             >
                               {c.status.toUpperCase()}

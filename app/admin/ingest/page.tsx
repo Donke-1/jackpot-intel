@@ -2,13 +2,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import {
-  ArrowRight,
-  BrainCircuit,
-  ClipboardCheck,
-  Sparkles,
-  Zap,
-} from 'lucide-react';
+import { ArrowRight, BrainCircuit, ClipboardCheck, Sparkles, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -48,12 +42,51 @@ const BOOKIE_CONFIG: Record<string, { name: string; games: number; typeCode: str
 };
 
 function cleanGeminiJson(input: string) {
-  return input.replace(/```json/g, '').replace(/```/g, '').trim();
+  // Handles ```json, ```JSON, ```js, ``` and trailing fences
+  return input
+    .replace(/```(?:json|JSON|js|javascript)?/g, '')
+    .replace(/```/g, '')
+    .trim();
 }
 
 function parseMaybeNumber(v: string): number | null {
   const n = Number(v);
   return Number.isFinite(n) ? n : null;
+}
+
+function isValidPick(p: any): p is '1' | 'X' | '2' {
+  return p === '1' || p === 'X' || p === '2';
+}
+
+function toIsoOrNull(input: string): string | null {
+  const t = new Date(input).getTime();
+  if (!Number.isFinite(t)) return null;
+  return new Date(t).toISOString();
+}
+
+function normalizeMatch(m: any): ParsedMatch | null {
+  const match_id = Number(m?.match_id);
+  if (!Number.isFinite(match_id)) return null;
+
+  const kickoffIso = typeof m?.kickoff === 'string' ? toIsoOrNull(m.kickoff) : null;
+  if (!kickoffIso) return null;
+
+  const prediction = typeof m?.prediction === 'string' ? m.prediction.trim().toUpperCase() : '';
+  if (!isValidPick(prediction)) return null;
+
+  const confidence =
+    m?.confidence == null ? undefined : Number.isFinite(Number(m.confidence)) ? Number(m.confidence) : undefined;
+
+  return {
+    match_id,
+    match_name: (m?.match_name ?? '').toString(),
+    home_team: (m?.home_team ?? '').toString(),
+    away_team: (m?.away_team ?? '').toString(),
+    kickoff: kickoffIso,
+    prediction,
+    confidence,
+    reason: m?.reason == null ? undefined : (m.reason ?? '').toString(),
+  };
 }
 
 export default function IntelligenceIngest() {
@@ -63,19 +96,18 @@ export default function IntelligenceIngest() {
   const [platform, setPlatform] = useState('SportPesa');
   const [variantIndex, setVariantIndex] = useState(0);
 
-  // Strategy A/B (variant code)
   const [strategyCode, setStrategyCode] = useState<StrategyChoice>('A');
   const strategyLabel =
     strategyCode === 'A' ? 'Strategy A (Variance Shield)' : 'Strategy B (Aggressive Sword)';
 
-  // Optional ingestion metadata
   const [externalRef, setExternalRef] = useState('');
-  const [drawDate, setDrawDate] = useState(''); // ISO date/time or date
-  const [prizePoolKes, setPrizePoolKes] = useState(''); // numeric text
+  const [drawDate, setDrawDate] = useState('');
+  const [prizePoolKes, setPrizePoolKes] = useState('');
 
   const [rawInput, setRawInput] = useState('');
   const [geminiJson, setGeminiJson] = useState('');
   const [parsedGames, setParsedGames] = useState<ParsedMatch[]>([]);
+  const [parseErrors, setParseErrors] = useState<string[]>([]);
 
   const currentVariant = BOOKIE_CONFIG[platform][variantIndex];
 
@@ -108,33 +140,64 @@ Each object must have:
   };
 
   const handleParse = () => {
+    setParseErrors([]);
     try {
       const cleanJson = cleanGeminiJson(geminiJson);
       const data = JSON.parse(cleanJson);
+
       if (!data?.matches || !Array.isArray(data.matches)) {
-        alert('JSON Format Error. Expected { "matches": [...] }');
+        setParseErrors(['JSON Format Error. Expected { "matches": [...] }']);
         return;
       }
-      setParsedGames(data.matches);
+
+      const expected = currentVariant.games;
+
+      const normalized: ParsedMatch[] = [];
+      const errors: string[] = [];
+
+      for (const raw of data.matches) {
+        const nm = normalizeMatch(raw);
+        if (!nm) {
+          errors.push('One or more matches are missing required fields (match_id, kickoff ISO, prediction 1/X/2).');
+          continue;
+        }
+        normalized.push(nm);
+      }
+
+      // Sort & validate match_id range/duplicates
+      normalized.sort((a, b) => a.match_id - b.match_id);
+
+      const seen = new Set<number>();
+      for (const m of normalized) {
+        if (m.match_id < 1 || m.match_id > expected) {
+          errors.push(`match_id out of range: ${m.match_id} (expected 1..${expected}).`);
+        }
+        if (seen.has(m.match_id)) {
+          errors.push(`Duplicate match_id detected: ${m.match_id}.`);
+        }
+        seen.add(m.match_id);
+      }
+
+      if (normalized.length !== expected) {
+        errors.push(`Expected ${expected} matches, got ${normalized.length}.`);
+      }
+
+      if (errors.length) {
+        setParseErrors(Array.from(new Set(errors)));
+        return;
+      }
+
+      setParsedGames(normalized);
       setStep(3);
     } catch {
-      alert('JSON Format Error. Please ensure Gemini returned valid JSON.');
+      setParseErrors(['JSON Format Error. Please ensure Gemini returned valid RAW JSON.']);
     }
   };
 
-  /**
-   * Ensures a site row exists for the given platform string.
-   * - code will be normalized lowercase slug.
-   */
   async function ensureSite(platformName: string) {
     const code = platformName.trim().toLowerCase().replace(/\s+/g, '-');
 
-    const { data: existing } = await supabase
-      .from('sites')
-      .select('*')
-      .eq('code', code)
-      .maybeSingle();
-
+    const { data: existing } = await supabase.from('sites').select('*').eq('code', code).maybeSingle();
     if (existing) return existing;
 
     const { data: created, error } = await supabase
@@ -147,9 +210,6 @@ Each object must have:
     return created;
   }
 
-  /**
-   * Ensures a jackpot_type exists for that site.
-   */
   async function ensureJackpotType(siteId: string, typeCode: string, typeName: string) {
     const { data: existing } = await supabase
       .from('jackpot_types')
@@ -175,10 +235,6 @@ Each object must have:
     return created;
   }
 
-  /**
-   * Finds or creates a jackpot_group for this site/type + (external_ref/draw_date).
-   * We try to match on external_ref if provided, else on draw_date if provided, else always create.
-   */
   async function getOrCreateJackpotGroup(args: {
     site_id: string;
     jackpot_type_id: string;
@@ -190,7 +246,6 @@ Each object must have:
   }) {
     const { site_id, jackpot_type_id, external_ref, draw_date, lock_time, end_time, prize_pool } = args;
 
-    // Attempt to find existing group if we have an identifier
     if (external_ref) {
       const { data: existing } = await supabase
         .from('jackpot_groups')
@@ -201,7 +256,6 @@ Each object must have:
         .maybeSingle();
 
       if (existing) {
-        // Update lock/end/prize if needed
         const { data: updated, error: updErr } = await supabase
           .from('jackpot_groups')
           .update({
@@ -242,7 +296,6 @@ Each object must have:
       }
     }
 
-    // Create new group
     const { data: created, error } = await supabase
       .from('jackpot_groups')
       .insert({
@@ -263,9 +316,6 @@ Each object must have:
     return created;
   }
 
-  /**
-   * Ensures variant A/B exists for the group.
-   */
   async function ensureVariant(groupId: string, variant: StrategyChoice, strategyTag: string) {
     const { data: existing } = await supabase
       .from('jackpot_variants')
@@ -298,7 +348,7 @@ Each object must have:
         return;
       }
 
-      // Compute lock/end times from kickoff list
+      // lock_time = earliest kickoff; end_time = latest kickoff + 3 hours
       const kickoffMs = parsedGames.map((g) => new Date(g.kickoff).getTime());
       const minKickoff = Math.min(...kickoffMs);
       const maxKickoff = Math.max(...kickoffMs);
@@ -317,6 +367,14 @@ Each object must have:
         return;
       }
 
+      // Validate drawDate if provided
+      const drawDateIso =
+        drawDate.trim().length > 0 ? toIsoOrNull(drawDate.trim()) : null;
+      if (drawDate.trim().length > 0 && !drawDateIso) {
+        alert('Draw date is invalid. Use YYYY-MM-DD or ISO 8601.');
+        return;
+      }
+
       // 1) Ensure site + jackpot type exist
       const site = await ensureSite(platform);
       const jt = await ensureJackpotType(site.id, currentVariant.typeCode, currentVariant.name);
@@ -326,18 +384,16 @@ Each object must have:
         site_id: site.id,
         jackpot_type_id: jt.id,
         external_ref: externalRef.trim() || null,
-        draw_date: drawDate.trim() ? new Date(drawDate).toISOString() : null,
+        draw_date: drawDateIso,
         lock_time,
         end_time,
         prize_pool: prizePool,
       });
 
-      // 3) Ensure variant A or B exists (depending on selected strategy)
+      // 3) Ensure variant A/B exists
       const variant = await ensureVariant(group.id, strategyCode, strategyLabel);
 
       // 4) Upsert fixtures for the group (by seq)
-      //    We insert/update by unique(group_id, seq). Since Supabase upsert conflict needs constraint name
-      //    or columns, we use "group_id,seq" (works when a unique constraint exists).
       const fixtureRows = parsedGames.map((g) => ({
         group_id: group.id,
         seq: g.match_id,
@@ -353,24 +409,27 @@ Each object must have:
         .upsert(fixtureRows, { onConflict: 'group_id,seq' })
         .select('id,group_id,seq');
 
-      if (fxErr) throw fxErr;
-      if (!fixtures || fixtures.length === 0) {
-        alert('Failed to create fixtures.');
-        return;
+      if (fxErr) {
+        // Common cause: missing unique constraint on (group_id, seq) or RLS deny
+        throw new Error(
+          `Fixtures upsert failed: ${fxErr.message}\n` +
+            `Hint: Ensure a UNIQUE constraint exists on fixtures(group_id, seq) and your RLS allows insert/update for admins.`
+        );
       }
 
-      // Map seq -> fixture_id
+      if (!fixtures || fixtures.length === 0) {
+        throw new Error('Failed to create fixtures (no rows returned).');
+      }
+
       const fixtureBySeq = new Map<number, string>();
-      for (const f of fixtures) {
-        fixtureBySeq.set(Number((f as any).seq), (f as any).id);
+      for (const f of fixtures as any[]) {
+        fixtureBySeq.set(Number(f.seq), String(f.id));
       }
 
       // 5) Upsert predictions for this variant (by unique(variant_id, fixture_id))
       const predictionRows = parsedGames.map((g) => {
         const fixtureId = fixtureBySeq.get(g.match_id);
-        if (!fixtureId) {
-          throw new Error(`Missing fixture created for match_id=${g.match_id}`);
-        }
+        if (!fixtureId) throw new Error(`Missing fixture created for match_id=${g.match_id}`);
         return {
           variant_id: variant.id,
           fixture_id: fixtureId,
@@ -384,10 +443,18 @@ Each object must have:
         .from('predictions')
         .upsert(predictionRows, { onConflict: 'variant_id,fixture_id' });
 
-      if (prErr) throw prErr;
+      if (prErr) {
+        throw new Error(
+          `Predictions upsert failed: ${prErr.message}\n` +
+            `Hint: Ensure a UNIQUE constraint exists on predictions(variant_id, fixture_id) and your RLS allows insert/update for admins.`
+        );
+      }
 
       alert(
-        `Committed successfully!\n\nGroup: ${platform} / ${currentVariant.name}\nVariant: ${strategyCode}\nFixtures: ${parsedGames.length}`
+        `Committed successfully!\n\n` +
+          `Group: ${platform} / ${currentVariant.name}\n` +
+          `Variant: ${strategyCode}\n` +
+          `Fixtures: ${parsedGames.length}`
       );
 
       // Reset
@@ -395,7 +462,8 @@ Each object must have:
       setRawInput('');
       setGeminiJson('');
       setParsedGames([]);
-      // keep platform selections as-is for speed
+      setParseErrors([]);
+      // keep platform selections for speed
     } catch (err: any) {
       alert(err?.message || 'Failed to commit inventory.');
     } finally {
@@ -461,7 +529,10 @@ Each object must have:
                 </label>
                 <select
                   value={platform}
-                  onChange={(e) => setPlatform(e.target.value)}
+                  onChange={(e) => {
+                    setPlatform(e.target.value);
+                    setVariantIndex(0);
+                  }}
                   className="w-full bg-black border-2 border-gray-800 p-3 rounded-xl text-white outline-none focus:border-cyan-500 transition-all"
                 >
                   {Object.keys(BOOKIE_CONFIG).map((p) => (
@@ -570,12 +641,17 @@ Each object must have:
             placeholder="Paste the RAW JSON output from Gemini here..."
             className="h-96 w-full bg-black border-2 border-gray-800 p-6 rounded-[2rem] text-xs font-mono text-green-500 outline-none focus:border-green-500/30"
           />
+
+          {parseErrors.length > 0 && (
+            <div className="bg-amber-950/20 border border-amber-900/40 rounded-2xl p-4 text-amber-200 text-xs space-y-1">
+              {parseErrors.map((e, idx) => (
+                <div key={idx}>• {e}</div>
+              ))}
+            </div>
+          )}
+
           <div className="flex gap-4">
-            <Button
-              variant="outline"
-              onClick={() => setStep(1)}
-              className="flex-1 py-6 rounded-2xl"
-            >
+            <Button variant="outline" onClick={() => setStep(1)} className="flex-1 py-6 rounded-2xl">
               RE-CONFIGURE
             </Button>
             <Button
@@ -596,17 +672,27 @@ Each object must have:
               Ready for Deployment
             </h2>
             <p className="text-gray-400 text-sm">
-              Parsed <span className="text-white font-bold">{parsedGames.length} matches</span>{' '}
-              for the {platform} {currentVariant.name}. Variant{' '}
+              Parsed <span className="text-white font-bold">{parsedGames.length} matches</span> for the{' '}
+              {platform} {currentVariant.name}. Variant{' '}
               <span className="text-white font-bold">{strategyCode}</span>.
             </p>
           </div>
+
           <Button
             onClick={handleSaveToInventory}
             disabled={loading}
             className="w-full bg-cyan-600 py-8 font-black rounded-[2rem] text-xl shadow-2xl"
           >
             {loading ? 'STORING DATA...' : 'COMMIT TO INVENTORY'}
+          </Button>
+
+          <Button
+            variant="outline"
+            onClick={() => setStep(2)}
+            disabled={loading}
+            className="w-full border-gray-800 text-gray-400 hover:text-white py-5 rounded-[2rem]"
+          >
+            Back to JSON
           </Button>
         </div>
       )}

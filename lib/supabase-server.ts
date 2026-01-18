@@ -1,7 +1,14 @@
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 
-// ✅ Make it async because cookies() can be async in newer Next versions
+/**
+ * Server Component safe Supabase client (SSR cookie model).
+ *
+ * - Reads cookies via getAll()
+ * - Attempts to write cookies via setAll()
+ *   - In Server Components, cookie mutation may throw
+ *   - We swallow that error because middleware/route-handlers do the real refresh writes
+ */
 export async function createSupabaseServerClient() {
   const cookieStore = await cookies();
 
@@ -10,14 +17,18 @@ export async function createSupabaseServerClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
+        getAll() {
+          return cookieStore.getAll();
         },
-        set(name: string, value: string, options: any) {
-          cookieStore.set({ name, value, ...options });
-        },
-        remove(name: string, options: any) {
-          cookieStore.set({ name, value: '', ...options });
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set({ name, value, ...options });
+            });
+          } catch {
+            // Server Components can’t always set cookies.
+            // Middleware / Route Handlers will handle session refresh + cookie writes.
+          }
         },
       },
     }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -23,6 +23,7 @@ import {
   Wallet,
   History,
   Trophy,
+  AlertTriangle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
@@ -35,54 +36,120 @@ type NavItem = {
   badge?: string;
 };
 
+type RoleState = 'loading' | 'ready' | 'error';
+
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const [isAdminMode, setIsAdminMode] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [isRealAdmin, setIsRealAdmin] = useState(false);
+  const [isAdminMode, setIsAdminMode] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  async function loadUserAndRole() {
-    const { data } = await supabase.auth.getUser();
-    const u = data?.user ?? null;
-    setUser(u);
+  const [roleState, setRoleState] = useState<RoleState>('loading');
+  const [softError, setSoftError] = useState<string | null>(null);
 
-    if (!u) {
-      setIsRealAdmin(false);
-      setIsAdminMode(false);
-      return;
+  // Race protection / de-dupe
+  const reqIdRef = useRef(0);
+  const inFlightRef = useRef(false);
+
+  const readAdminMode = useCallback(() => {
+    try {
+      return localStorage.getItem('jackpot_admin_mode') === 'true';
+    } catch {
+      return false;
     }
+  }, []);
 
-    // Read admin flag from profiles (requires your RLS to allow user read own profile)
-    const { data: profile, error } = await supabase.from('profiles').select('is_admin').eq('id', u.id).single();
-
-    if (error) {
-      // eslint-disable-next-line no-console
-      console.error('Sidebar admin check failed:', error);
-      setIsRealAdmin(false);
-      setIsAdminMode(false);
-      return;
+  const writeAdminMode = useCallback((value: boolean) => {
+    try {
+      localStorage.setItem('jackpot_admin_mode', String(value));
+    } catch {
+      // ignore
     }
+  }, []);
 
-    const admin = Boolean(profile?.is_admin);
-    setIsRealAdmin(admin);
+  const loadUserAndRole = useCallback(async () => {
+    if (inFlightRef.current) return;
 
-    if (admin) {
-      const savedMode = localStorage.getItem('jackpot_admin_mode');
-      setIsAdminMode(savedMode === 'true');
-    } else {
-      setIsAdminMode(false);
+    inFlightRef.current = true;
+    const myReqId = ++reqIdRef.current;
+
+    setRoleState('loading');
+    setSoftError(null);
+
+    try {
+      // Cookie-based auth model: getUser is the reliable source of truth
+      const { data: authData, error: authErr } = await supabase.auth.getUser();
+
+      if (myReqId !== reqIdRef.current) return;
+
+      if (authErr) {
+        // Don’t wipe admin/user state on transient errors; show soft error
+        setSoftError(authErr.message);
+        setRoleState('error');
+        return;
+      }
+
+      const u = authData?.user ?? null;
+      setUser(u);
+
+      if (!u) {
+        setIsRealAdmin(false);
+        setIsAdminMode(false);
+        setRoleState('ready');
+        return;
+      }
+
+      // Read admin flag from profiles (requires RLS to allow user read own profile)
+      const { data: profile, error: profileErr } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', u.id)
+        .single();
+
+      if (myReqId !== reqIdRef.current) return;
+
+      if (profileErr) {
+        // KEY FIX: don’t “fail closed” to non-admin permanently.
+        // Keep user loaded; show error state so UI doesn’t randomly drop admin links.
+        setSoftError(profileErr.message);
+        setRoleState('error');
+        return;
+      }
+
+      const admin = Boolean(profile?.is_admin);
+      setIsRealAdmin(admin);
+
+      if (admin) {
+        setIsAdminMode(readAdminMode());
+      } else {
+        setIsAdminMode(false);
+      }
+
+      setRoleState('ready');
+    } catch (e: any) {
+      if (myReqId !== reqIdRef.current) return;
+      setSoftError(e?.message || 'Role check failed.');
+      setRoleState('error');
+    } finally {
+      if (myReqId === reqIdRef.current) {
+        inFlightRef.current = false;
+      }
     }
-  }
+  }, [readAdminMode]);
 
   useEffect(() => {
     loadUserAndRole();
-    const { data: sub } = supabase.auth.onAuthStateChange(() => loadUserAndRole());
+
+    // Re-check on auth changes
+    const { data: sub } = supabase.auth.onAuthStateChange(() => {
+      loadUserAndRole();
+    });
+
     return () => sub?.subscription?.unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loadUserAndRole]);
 
   useEffect(() => {
     setIsMobileOpen(false);
@@ -92,7 +159,7 @@ export default function Sidebar() {
     if (!isRealAdmin) return;
     const newMode = !isAdminMode;
     setIsAdminMode(newMode);
-    localStorage.setItem('jackpot_admin_mode', String(newMode));
+    writeAdminMode(newMode);
   };
 
   const userLinks: NavItem[] = useMemo(
@@ -123,8 +190,8 @@ export default function Sidebar() {
 
   const isInAdminRoute = pathname?.startsWith('/admin') ?? false;
 
-  // ✅ Key fix: if you are in /admin/*, always show admin links
-  // AdminLayout already enforces access, so this is safe and consistent.
+  // If in /admin/* show admin links; AdminLayout protects access.
+  // Otherwise show admin links only when verified admin + admin mode enabled.
   const currentLinks = isInAdminRoute ? adminLinks : isRealAdmin && isAdminMode ? adminLinks : userLinks;
 
   const onLogout = async () => {
@@ -168,7 +235,10 @@ export default function Sidebar() {
             <X className="w-6 h-6" />
           </button>
 
-          <Link href="/home" className="flex items-center space-x-2 mb-4 cursor-pointer hover:opacity-80 transition-opacity">
+          <Link
+            href="/home"
+            className="flex items-center space-x-2 mb-4 cursor-pointer hover:opacity-80 transition-opacity"
+          >
             <div className="w-8 h-8 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
               <span className="font-black text-white text-lg">J</span>
             </div>
@@ -178,7 +248,7 @@ export default function Sidebar() {
           </Link>
 
           {user && (
-            <div className="mb-6 flex items-center justify-between px-2">
+            <div className="mb-4 flex items-center justify-between px-2 gap-2">
               <div className="text-[10px] text-gray-600 font-bold uppercase tracking-widest truncate max-w-[160px]">
                 {user.email}
               </div>
@@ -187,6 +257,23 @@ export default function Sidebar() {
                   ADMIN VERIFIED
                 </Badge>
               )}
+            </div>
+          )}
+
+          {/* Soft error banner: don’t hide links, just show warning */}
+          {roleState === 'error' && (
+            <div className="mb-4 mx-2 p-2 rounded-lg border border-amber-900/40 bg-amber-950/20 text-amber-300 flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+              <div className="text-[10px] leading-snug">
+                <div className="font-black uppercase tracking-widest">Role check issue</div>
+                <div className="text-amber-200/80">{softError || 'Temporary problem.'}</div>
+                <button
+                  onClick={loadUserAndRole}
+                  className="mt-1 text-[10px] font-black text-amber-300 underline underline-offset-2 hover:text-amber-200"
+                >
+                  Retry
+                </button>
+              </div>
             </div>
           )}
 
@@ -253,14 +340,24 @@ export default function Sidebar() {
                   <p className="text-[10px] text-gray-500">Switch Context</p>
                 </div>
               </div>
-              <ChevronRight className={cn('w-4 h-4 text-gray-600 transition-transform duration-300', isAdminMode && 'rotate-90 text-red-500')} />
+              <ChevronRight
+                className={cn(
+                  'w-4 h-4 text-gray-600 transition-transform duration-300',
+                  isAdminMode && 'rotate-90 text-red-500'
+                )}
+              />
             </div>
           )}
 
           {user ? (
             <div className="flex items-center justify-between px-2">
               <div className="text-xs text-gray-500 truncate max-w-[150px]">{user.email}</div>
-              <button onClick={onLogout} className="text-gray-500 hover:text-white transition-colors" title="Logout" aria-label="Logout">
+              <button
+                onClick={onLogout}
+                className="text-gray-500 hover:text-white transition-colors"
+                title="Logout"
+                aria-label="Logout"
+              >
                 <LogOut className="w-4 h-4" />
               </button>
             </div>

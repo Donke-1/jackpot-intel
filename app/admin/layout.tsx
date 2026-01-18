@@ -1,45 +1,59 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
-import { ShieldAlert, Loader2, RefreshCcw, LogIn } from 'lucide-react';
+import { ShieldAlert, Loader2, RefreshCcw, LogIn, AlertTriangle } from 'lucide-react';
 import Sidebar from '@/components/layout/Sidebar';
 import { Button } from '@/components/ui/Button';
 
-type AdminState = 'loading' | 'authorized' | 'denied';
+type AdminState = 'loading' | 'authorized' | 'denied' | 'error';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+
   const [state, setState] = useState<AdminState>('loading');
   const [softError, setSoftError] = useState<string | null>(null);
+
+  // Protect against race conditions/out-of-order updates
+  const requestIdRef = useRef(0);
+  const inFlightRef = useRef(false);
 
   const watermark = useMemo(
     () => (
       <div className="absolute top-0 right-0 p-4 opacity-50 pointer-events-none">
-        <span className="text-[80px] font-black text-gray-900/30 leading-none select-none">ADMIN</span>
+        <span className="text-[80px] font-black text-gray-900/30 leading-none select-none">
+          ADMIN
+        </span>
       </div>
     ),
     []
   );
 
-  async function checkAdmin() {
+  const checkAdmin = useCallback(async () => {
+    // De-dupe concurrent checks
+    if (inFlightRef.current) return;
+
+    inFlightRef.current = true;
+    const myReqId = ++requestIdRef.current;
+
     setState('loading');
     setSoftError(null);
 
     try {
-      // Prefer session (more resilient on mobile resume)
-      const { data: sessionData } = await supabase.auth.getSession();
-      let user = sessionData?.session?.user ?? null;
+      // Cookie-based auth model: getUser is the most reliable "am I logged in?"
+      const { data: userData, error: userErr } = await supabase.auth.getUser();
+      if (myReqId !== requestIdRef.current) return;
 
-      // If user missing, try refreshing session once
-      if (!user) {
-        const { data: refreshed } = await supabase.auth.refreshSession();
-        user = refreshed?.session?.user ?? null;
+      if (userErr) {
+        // Auth check failed (transient network / cookie issue)
+        setSoftError(userErr.message);
+        setState('error');
+        return;
       }
 
+      const user = userData?.user ?? null;
       if (!user) {
-        // Not logged in
         setState('denied');
         return;
       }
@@ -51,18 +65,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         .eq('id', user.id)
         .single();
 
+      if (myReqId !== requestIdRef.current) return;
+
       if (profileErr) {
+        // This is often a transient/RLS/config issue: don't hard "deny" permanently
         setSoftError(profileErr.message);
-        setState('denied');
+        setState('error');
         return;
       }
 
       setState(profile?.is_admin ? 'authorized' : 'denied');
     } catch (e: any) {
+      if (myReqId !== requestIdRef.current) return;
       setSoftError(e?.message || 'Authorization check failed.');
-      setState('denied');
+      setState('error');
+    } finally {
+      if (myReqId === requestIdRef.current) {
+        inFlightRef.current = false;
+      }
     }
-  }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -74,16 +96,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     safeCheck();
 
-    // Re-check on auth changes
+    // Re-check on auth changes (sign in/out, token refresh)
     const { data: sub } = supabase.auth.onAuthStateChange(() => {
       safeCheck();
     });
 
-    // ✅ Critical for mobile: re-check when tab comes back
-    const onFocus = () => safeCheck();
-    const onVis = () => {
-      if (document.visibilityState === 'visible') safeCheck();
+    // Re-check when tab comes back (avoid spamming with a tiny delay)
+    let focusTimer: any = null;
+    const schedule = () => {
+      if (focusTimer) clearTimeout(focusTimer);
+      focusTimer = setTimeout(() => safeCheck(), 150);
     };
+
+    const onFocus = () => schedule();
+    const onVis = () => {
+      if (document.visibilityState === 'visible') schedule();
+    };
+
     window.addEventListener('focus', onFocus);
     document.addEventListener('visibilitychange', onVis);
 
@@ -92,9 +121,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       sub?.subscription?.unsubscribe();
       window.removeEventListener('focus', onFocus);
       document.removeEventListener('visibilitychange', onVis);
+      if (focusTimer) clearTimeout(focusTimer);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [checkAdmin]);
 
   if (state === 'loading') {
     return (
@@ -107,13 +136,49 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
+  if (state === 'error') {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-center p-4">
+        <AlertTriangle className="w-16 h-16 text-amber-400 mb-4" />
+        <h1 className="text-3xl font-bold text-white mb-2">AUTH CHECK FAILED</h1>
+        <p className="text-gray-500 mb-6">
+          {softError
+            ? `Temporary auth/profile issue: ${softError}`
+            : 'Temporary auth/profile issue. Please retry.'}
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Button onClick={checkAdmin} className="bg-cyan-500 hover:bg-cyan-400 text-black font-black">
+            <RefreshCcw className="w-4 h-4 mr-2" /> Retry
+          </Button>
+
+          <Button
+            onClick={() => router.push('/login')}
+            variant="outline"
+            className="border-gray-800 text-gray-200"
+          >
+            <LogIn className="w-4 h-4 mr-2" /> Go to Login
+          </Button>
+
+          <Button
+            onClick={() => router.push('/home')}
+            variant="outline"
+            className="border-gray-800 text-gray-200"
+          >
+            Return Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (state === 'denied') {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center text-center p-4">
         <ShieldAlert className="w-16 h-16 text-red-500 mb-4" />
         <h1 className="text-3xl font-bold text-white mb-2">ACCESS DENIED</h1>
         <p className="text-gray-500 mb-6">
-          {softError ? `Auth check error: ${softError}` : 'This area is restricted to administrators.'}
+          This area is restricted to administrators.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3">

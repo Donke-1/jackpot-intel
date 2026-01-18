@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Layers, Calendar, Ticket, Clock, RefreshCcw } from 'lucide-react';
+import { Layers, Calendar, Ticket, Clock, RefreshCcw, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import Link from 'next/link';
@@ -62,50 +62,10 @@ export default function CycleManager() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [softError, setSoftError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-
-      // Inventory = jackpot groups (not archived).
-      // You can narrow further later: status in ('draft','active','locked','settling')
-      const { data: inv, error: invErr } = await supabase
-        .from('jackpot_groups')
-        .select(
-          `
-          id,status,draw_date,lock_time,end_time,prize_pool,
-          sites:site_id(name,code),
-          jackpot_types:jackpot_type_id(name,code),
-          jackpot_variants(id,variant,strategy_tag)
-        `
-        )
-        .neq('status', 'archived')
-        .order('lock_time', { ascending: true });
-
-      if (invErr) {
-        // eslint-disable-next-line no-console
-        console.error(invErr);
-      }
-
-      // Cycles in rescue mode = waiting
-      const { data: cyc, error: cycErr } = await supabase
-        .from('cycles')
-        .select('id,name,status,credit_cost,is_free,max_end_at,goal_settings')
-        .eq('status', 'waiting')
-        .order('created_at', { ascending: false });
-
-      if (cycErr) {
-        // eslint-disable-next-line no-console
-        console.error(cycErr);
-      }
-
-      setInventory((inv as any) || []);
-      setWaitingCycles((cyc as any) || []);
-      setLoading(false);
-    }
-
-    fetchData();
-  }, []);
+  // Race protection
+  const reqIdRef = useRef(0);
 
   const selectedMap = useMemo(() => {
     const m = new Map<string, SelectionMode>();
@@ -141,8 +101,6 @@ export default function CycleManager() {
   }, [selectedGroups]);
 
   const buildGoalSettings = () => {
-    // Keep your existing goalType for now. Later we’ll expand this object to include
-    // auto-attach rules, bonus tiers, duration policy, refund rules, etc.
     return {
       goalType,
       pairedDefault: true,
@@ -150,13 +108,80 @@ export default function CycleManager() {
     };
   };
 
-  async function createCycleAndAttachVariants(cycleId?: string) {
-    if (selected.length === 0) {
-      alert('Select at least one jackpot group.');
-      return;
-    }
+  const fetchData = useCallback(async () => {
+    const myReqId = ++reqIdRef.current;
+    setLoading(true);
+    setSoftError(null);
 
-    // Build the cycle_variants rows from selected modes
+    try {
+      // Inventory = jackpot groups (not archived).
+      const invPromise = supabase
+        .from('jackpot_groups')
+        .select(
+          `
+          id,status,draw_date,lock_time,end_time,prize_pool,
+          sites:site_id(name,code),
+          jackpot_types:jackpot_type_id(name,code),
+          jackpot_variants(id,variant,strategy_tag)
+        `
+        )
+        .neq('status', 'archived')
+        .order('lock_time', { ascending: true });
+
+      // Waiting cycles
+      const cycPromise = supabase
+        .from('cycles')
+        .select('id,name,status,credit_cost,is_free,max_end_at,goal_settings')
+        .eq('status', 'waiting')
+        .order('created_at', { ascending: false });
+
+      const [{ data: inv, error: invErr }, { data: cyc, error: cycErr }] = await Promise.all([
+        invPromise,
+        cycPromise,
+      ]);
+
+      if (myReqId !== reqIdRef.current) return;
+
+      if (invErr) {
+        console.error(invErr);
+        setSoftError(invErr.message);
+      }
+      if (cycErr) {
+        console.error(cycErr);
+        setSoftError((prev) => prev || cycErr.message);
+      }
+
+      setInventory((inv as any) || []);
+      setWaitingCycles((cyc as any) || []);
+    } catch (e: any) {
+      if (myReqId !== reqIdRef.current) return;
+      setSoftError(e?.message || 'Failed to load cycle manager data.');
+      setInventory([]);
+      setWaitingCycles([]);
+    } finally {
+      if (myReqId === reqIdRef.current) setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const run = async () => {
+      if (cancelled) return;
+      await fetchData();
+    };
+
+    run();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchData]);
+
+  async function createCycleAndAttachVariants(cycleId: string) {
+    if (!cycleId) throw new Error('Missing cycle id.');
+    if (selected.length === 0) throw new Error('Select at least one jackpot group.');
+
     const links: Array<{
       cycle_id: string;
       group_id: string;
@@ -181,15 +206,16 @@ export default function CycleManager() {
 
       if (wantA && varA) {
         links.push({
-          cycle_id: cycleId!,
+          cycle_id: cycleId,
           group_id: group.id,
           variant_id: varA.id,
           is_paired: s.mode === 'both',
         });
       }
+
       if (wantB && varB) {
         links.push({
-          cycle_id: cycleId!,
+          cycle_id: cycleId,
           group_id: group.id,
           variant_id: varB.id,
           is_paired: s.mode === 'both',
@@ -201,7 +227,6 @@ export default function CycleManager() {
     if (linkErr) throw linkErr;
   }
 
-  // Publish NEW cycle
   const handlePublish = async () => {
     if (!cycleName.trim()) return alert('Cycle name required.');
     if (selected.length === 0) return alert('Select at least one jackpot group.');
@@ -212,10 +237,10 @@ export default function CycleManager() {
         .from('cycles')
         .insert({
           name: cycleName.trim(),
-          category: 'Hunter', // keep your default
+          category: 'Hunter',
           status: 'active',
           goal_settings: buildGoalSettings(),
-          credit_cost: isFree ? 0 : creditCost,
+          credit_cost: isFree ? 0 : Math.max(0, creditCost || 0),
           is_free: isFree,
           max_end_at: cycleEnd ? cycleEnd.toISOString() : null,
         })
@@ -223,11 +248,15 @@ export default function CycleManager() {
         .single();
 
       if (cycleErr) throw cycleErr;
+      if (!cycle?.id) throw new Error('Cycle insert succeeded but no id returned.');
 
       await createCycleAndAttachVariants(cycle.id);
 
       alert('Cycle Published Successfully!');
-      window.location.reload();
+      // Refresh data without hard reload
+      setSelected([]);
+      setTargetCycleId(null);
+      await fetchData();
     } catch (err: any) {
       alert(err?.message || 'Failed to publish cycle.');
     } finally {
@@ -235,7 +264,6 @@ export default function CycleManager() {
     }
   };
 
-  // Extend / rescue a waiting cycle
   const handleExtendCycle = async () => {
     if (!targetCycleId) return alert('Select a waiting cycle to extend.');
     if (selected.length === 0) return alert('Select jackpot groups to attach.');
@@ -255,7 +283,9 @@ export default function CycleManager() {
       if (updErr) throw updErr;
 
       alert('Cycle Extended Successfully!');
-      window.location.reload();
+      setSelected([]);
+      setTargetCycleId(null);
+      await fetchData();
     } catch (err: any) {
       alert(err?.message || 'Failed to extend cycle.');
     } finally {
@@ -264,7 +294,14 @@ export default function CycleManager() {
   };
 
   if (loading) {
-    return <div className="min-h-screen bg-black" />;
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center text-gray-500">
+        <div className="flex items-center gap-2">
+          <Loader2 className="w-5 h-5 animate-spin text-cyan-500" />
+          <span className="text-sm font-mono">Loading cycle manager…</span>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -277,11 +314,30 @@ export default function CycleManager() {
           <p className="text-gray-400 text-sm">
             Bundle jackpot groups. Choose Variant A/B pairing and set credit cost.
           </p>
+          {softError && (
+            <div className="mt-3 text-[11px] text-amber-300 bg-amber-950/20 border border-amber-900/40 rounded-xl p-3">
+              {softError}
+            </div>
+          )}
         </div>
-        <div className="flex space-x-3">
+
+        <div className="flex flex-wrap gap-3 items-center">
+          <Button
+            variant="outline"
+            onClick={fetchData}
+            disabled={saving}
+            className="border-gray-800"
+            title="Refresh"
+          >
+            <RefreshCcw className="w-4 h-4 mr-2" /> Refresh
+          </Button>
+
           <Link href="/admin/ingest">
-            <Button variant="outline">Ingest</Button>
+            <Button variant="outline" className="border-gray-800">
+              Ingest
+            </Button>
           </Link>
+
           {!targetCycleId && (
             <Button
               onClick={handlePublish}
@@ -306,21 +362,17 @@ export default function CycleManager() {
                 key={c.id}
                 onClick={() => setTargetCycleId(targetCycleId === c.id ? null : c.id)}
                 className={`px-4 py-3 rounded-xl border-2 transition-all text-left min-w-[220px] ${
-                  targetCycleId === c.id
-                    ? 'border-amber-500 bg-amber-500/20'
-                    : 'border-gray-800 bg-black'
+                  targetCycleId === c.id ? 'border-amber-500 bg-amber-500/20' : 'border-gray-800 bg-black'
                 }`}
               >
                 <div className="text-sm font-bold">{c.name}</div>
-                <div className="text-[10px] text-gray-500">
-                  {c.goal_settings?.goalType || '—'}
-                </div>
+                <div className="text-[10px] text-gray-500">{c.goal_settings?.goalType || '—'}</div>
               </button>
             ))}
           </div>
 
           {targetCycleId && (
-            <div className="pt-4 border-t border-amber-500/20 flex items-center justify-between">
+            <div className="pt-4 border-t border-amber-500/20 flex items-center justify-between gap-4">
               <p className="text-xs text-amber-300 italic">
                 Select new jackpot groups below to attach and resume this cycle.
               </p>
@@ -329,7 +381,7 @@ export default function CycleManager() {
                 disabled={saving || selected.length === 0}
                 className="bg-amber-600 hover:bg-amber-500 font-black"
               >
-                EXECUTE EXTEND
+                {saving ? 'EXECUTING...' : 'EXECUTE EXTEND'}
               </Button>
             </div>
           )}
@@ -381,7 +433,11 @@ export default function CycleManager() {
                   type="number"
                   value={creditCost}
                   disabled={isFree}
-                  onChange={(e) => setCreditCost(parseInt(e.target.value || '0', 10))}
+                  min={0}
+                  onChange={(e) => {
+                    const n = parseInt(e.target.value || '0', 10);
+                    setCreditCost(Number.isFinite(n) ? Math.max(0, n) : 0);
+                  }}
                   className="w-full bg-black border border-gray-800 p-3 pl-10 rounded-xl text-white outline-none focus:border-cyan-500 disabled:opacity-40"
                 />
               </div>
@@ -464,7 +520,7 @@ export default function CycleManager() {
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
-                    disabled={!hasA}
+                    disabled={!hasA || saving}
                     onClick={() => toggleGroup(g.id, 'A')}
                     className={`flex-1 border-gray-800 ${
                       mode === 'A' ? 'border-cyan-500 text-white' : 'text-gray-400'
@@ -474,7 +530,7 @@ export default function CycleManager() {
                   </Button>
                   <Button
                     variant="outline"
-                    disabled={!hasB}
+                    disabled={!hasB || saving}
                     onClick={() => toggleGroup(g.id, 'B')}
                     className={`flex-1 border-gray-800 ${
                       mode === 'B' ? 'border-cyan-500 text-white' : 'text-gray-400'
@@ -484,7 +540,7 @@ export default function CycleManager() {
                   </Button>
                   <Button
                     variant="outline"
-                    disabled={!hasA || !hasB}
+                    disabled={!hasA || !hasB || saving}
                     onClick={() => toggleGroup(g.id, 'both')}
                     className={`flex-1 border-gray-800 ${
                       mode === 'both' ? 'border-cyan-500 text-white' : 'text-gray-400'

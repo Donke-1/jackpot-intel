@@ -1,48 +1,25 @@
 // lib/supabase.ts
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+'use client';
 
-const supabaseUrlEnv = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKeyEnv = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+import { createBrowserClient } from '@supabase/ssr';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
-if (!supabaseUrlEnv) {
-  throw new Error('Missing env: NEXT_PUBLIC_SUPABASE_URL');
-}
-if (!supabaseAnonKeyEnv) {
-  throw new Error('Missing env: NEXT_PUBLIC_SUPABASE_ANON_KEY');
-}
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey =
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-// ✅ Narrowed types for TS (now guaranteed to be strings)
-const supabaseUrl: string = supabaseUrlEnv;
-const supabaseAnonKey: string = supabaseAnonKeyEnv;
-
-/**
- * Browser/client Supabase instance (anon key).
- * Use this in client components.
- */
-export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-  },
-});
+if (!supabaseUrl) throw new Error('Missing env: NEXT_PUBLIC_SUPABASE_URL');
+if (!supabaseKey)
+  throw new Error(
+    'Missing env: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (or NEXT_PUBLIC_SUPABASE_ANON_KEY)'
+  );
 
 /**
- * Server-only Supabase client creator.
- * IMPORTANT:
- * - Do NOT import/call this from client components.
- * - Only call it from Route Handlers / Server Actions.
+ * Browser/client Supabase instance (cookie-based SSR setup via @supabase/ssr).
+ * Use ONLY in Client Components.
  */
-export function createServerSupabaseClient(serviceRoleKey: string): SupabaseClient {
-  if (!serviceRoleKey) {
-    throw new Error('Missing service role key for server Supabase client.');
-  }
-
-  return createClient(supabaseUrl, serviceRoleKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-      detectSessionInUrl: false,
-    },
-  });
-}
+export const supabase: SupabaseClient = createBrowserClient(
+  supabaseUrl,
+  supabaseKey
+);

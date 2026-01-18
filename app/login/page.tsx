@@ -6,15 +6,12 @@ import { useRouter } from 'next/navigation';
 import { Zap, Lock, User, Mail, AlertTriangle } from 'lucide-react';
 
 function getURL() {
-  // Prefer explicit site URL if you set it
   let url =
     process.env.NEXT_PUBLIC_SITE_URL ??
     process.env.NEXT_PUBLIC_VERCEL_URL ??
     'http://localhost:3000';
 
-  // Vercel env sometimes provides host without protocol
   url = url.startsWith('http') ? url : `https://${url}`;
-  // Ensure trailing slash for Supabase redirect consistency
   url = url.endsWith('/') ? url : `${url}/`;
   return url;
 }
@@ -32,13 +29,25 @@ export default function LoginPage() {
   const [username, setUsername] = useState('');
 
   useEffect(() => {
+    let cancelled = false;
+
     // If already logged in, go to user home
-    supabase.auth.getUser().then(({ data }) => {
-      if (data?.user) {
-        router.push('/home');
-        router.refresh();
-      }
-    });
+    supabase.auth
+      .getUser()
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (!error && data?.user) {
+          router.push('/home');
+          router.refresh();
+        }
+      })
+      .catch(() => {
+        // ignore transient auth errors on mount
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [router]);
 
   async function upsertUsername(userId: string, emailValue: string, usernameValue: string) {
@@ -75,8 +84,8 @@ export default function LoginPage() {
           password,
           options: {
             data: { username },
-            // ✅ fixes localhost redirect in confirmation emails
-            emailRedirectTo: getURL(),
+            // IMPORTANT: for magic links / confirmation, direct to our auth callback
+            emailRedirectTo: `${getURL()}auth/callback`,
           },
         });
 
@@ -92,6 +101,7 @@ export default function LoginPage() {
         );
         setMode('signin');
         setPassword('');
+        setUsername('');
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
@@ -99,14 +109,13 @@ export default function LoginPage() {
         });
         if (error) throw error;
 
-        const signedInUser = data?.user;
-        if (signedInUser) {
-          await upsertUsername(signedInUser.id, email, username);
-        }
+        // On sign-in, we DO NOT upsert username (usually empty in signin mode).
+        // If you want profile sync, do it elsewhere where username is known.
 
-        // ✅ go to real user home
-        router.push('/home');
-        router.refresh();
+        if (data?.user) {
+          router.push('/home');
+          router.refresh();
+        }
       }
     } catch (err: any) {
       setError(err?.message || 'Authentication failed.');

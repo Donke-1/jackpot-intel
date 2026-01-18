@@ -1,61 +1,39 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-
-function withTimeout<T>(fn: () => Promise<T>, ms: number): Promise<T> {
-  return new Promise((resolve, reject) => {
-    const t = setTimeout(() => reject(new Error('timeout')), ms);
-    fn()
-      .then((v) => {
-        clearTimeout(t);
-        resolve(v);
-      })
-      .catch((e) => {
-        clearTimeout(t);
-        reject(e);
-      });
-  });
-}
+import { Loader2 } from 'lucide-react';
 
 export default function AdminRootRedirect() {
   const router = useRouter();
 
+  // Protect against out-of-order async results
+  const reqIdRef = useRef(0);
+
   useEffect(() => {
     let cancelled = false;
+    const myReqId = ++reqIdRef.current;
+
+    // If something stalls (network hiccup), don’t hang forever
+    const hardFallback = setTimeout(() => {
+      if (!cancelled && myReqId === reqIdRef.current) {
+        router.replace('/admin/cycles');
+      }
+    }, 6000);
 
     async function go() {
       try {
-        // Stabilize auth (mobile resume / refresh spam)
-        const { data: sess } = await supabase.auth.getSession();
-        let user = sess?.session?.user ?? null;
+        // Pull a small recent window of groups and decide where to route.
+        // Keeping it simple avoids brittle SQL/or() logic and still works with your current schema.
+        const { data, error } = await supabase
+          .from('jackpot_groups')
+          .select('id,status,end_time')
+          .neq('status', 'archived')
+          .order('end_time', { ascending: false })
+          .limit(30);
 
-        if (!user) {
-          const { data: refreshed } = await supabase.auth.refreshSession();
-          user = refreshed?.session?.user ?? null;
-        }
-
-        if (!user) {
-          if (!cancelled) router.replace('/login');
-          return;
-        }
-
-        // Prevent endless spinner on slow networks
-        const result = await withTimeout(
-          () =>
-            supabase
-              .from('jackpot_groups')
-              .select('id,status,end_time')
-              .neq('status', 'archived')
-              .order('end_time', { ascending: false })
-              .limit(25),
-          6000
-        );
-
-        if (cancelled) return;
-
-        const { data, error } = result as any;
+        if (cancelled || myReqId !== reqIdRef.current) return;
 
         if (error || !data) {
           router.replace('/admin/cycles');
@@ -63,15 +41,20 @@ export default function AdminRootRedirect() {
         }
 
         const now = Date.now();
-        const hasSettlingWork = (data as any[]).some((g) => {
-          const end = g.end_time ? new Date(g.end_time).getTime() : NaN;
-          const ended = Number.isFinite(end) ? end <= now : false;
-          return g.status === 'locked' || g.status === 'settling' || ended;
+
+        const hasSettlingWork = data.some((g: any) => {
+          const t = g?.end_time ? new Date(g.end_time).getTime() : NaN;
+          const ended = Number.isFinite(t) ? t <= now : false;
+
+          // If it’s locked/settling OR already past end_time, route to settling
+          return g?.status === 'locked' || g?.status === 'settling' || ended;
         });
 
         router.replace(hasSettlingWork ? '/admin/settling' : '/admin/cycles');
       } catch {
-        if (!cancelled) router.replace('/admin/cycles');
+        if (!cancelled && myReqId === reqIdRef.current) {
+          router.replace('/admin/cycles');
+        }
       }
     }
 
@@ -79,13 +62,14 @@ export default function AdminRootRedirect() {
 
     return () => {
       cancelled = true;
+      clearTimeout(hardFallback);
     };
   }, [router]);
 
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-black text-gray-500 space-y-4">
-      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cyan-500"></div>
-      <p className="text-sm font-mono animate-pulse">Initializing Command Interface...</p>
+      <Loader2 className="w-8 h-8 animate-spin text-cyan-500" />
+      <p className="text-sm font-mono animate-pulse">Initializing Command Interface…</p>
     </div>
   );
 }

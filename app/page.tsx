@@ -2,15 +2,21 @@ import { redirect } from 'next/navigation';
 import LandingClient from './LandingClient';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function Home() {
   const supabase = await createSupabaseServerClient();
-  const { data } = await supabase.auth.getUser();
 
-  // Logged-in users (including admin) go to the real home console
-  if (data?.user) {
-    redirect('/home');
+  try {
+    const { data, error } = await supabase.auth.getUser();
+
+    if (!error && data?.user) {
+      redirect('/home');
+    }
+  } catch {
+    // If auth check fails, treat as guest and show landing (prevents hard hangs)
   }
 
-  // Guests see marketing landing page
   return <LandingClient />;
 }
